@@ -1,0 +1,23 @@
+/* HomePage.css */
+
+.home-page {
+    display: flex;
+  }
+  
+  .home-content {
+    margin-left: 220px; /* Отступ для Sidebar */
+    padding: 40px;
+    color: #ffffff;
+    background-color: #2e2e2e;
+    height: 100vh;
+    width: calc(100% - 220px);
+  }
+  
+  @media (max-width: 1200px) {
+    .home-content {
+      margin-left: 0;
+      padding: 80px 20px 20px 20px; /* Отступ сверху для фиксированной Sidebar */
+      width: 100%;
+    }
+  }
+  

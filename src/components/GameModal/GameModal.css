@@ -1,0 +1,100 @@
+/* src/components/GameModal/GameModal.css */
+
+/* Модальне вікно */
+.game-modal {
+    position: absolute; /* Абсолютне позиціонування */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Центрування */
+    background-color: #2e2e2e;
+    padding: 2rem;
+    max-width: 800px;
+    width: 90%;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    color: #ffffff;
+    overflow-y: auto;
+    max-height: 90vh;
+    z-index: 1001; /* Високий z-index */
+    animation: modalFadeIn 0.3s ease-in-out;
+  }
+  
+  @keyframes modalFadeIn {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -60%);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, -50%);
+    }
+  }
+  
+  .game-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+    z-index: 1000; /* Нижчий за модальне вікно, але вище за інші елементи */
+  }
+  
+  .close-button {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: #ffffff;
+    cursor: pointer;
+  }
+  
+  .modal-section {
+    margin-bottom: 1.5rem;
+  }
+  
+  .modal-section h3 {
+    font-size: 1.25rem;
+    color: #f0d9b5;
+    margin-bottom: 1rem;
+  }
+  
+  .modal-actions {
+    text-align: center;
+    margin-top: 1.5rem;
+  }
+  
+  .start-game-button {
+    padding: 0.75rem 2rem;
+    font-size: 1.25rem;
+    background-color: #4caf50;
+    border: none;
+    border-radius: 12px;
+    color: #ffffff;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+  }
+  
+  .start-game-button:hover {
+    background-color: #43a047;
+    transform: scale(1.05);
+  }
+  
+  /* Додаткові стилі для покращення візуальної привабливості */
+  .cards-container .card.selected {
+    border: 2px solid #f0d9b5;
+  }
+  
+  /* Адаптивність модального вікна */
+  @media (max-width: 768px) {
+    .game-modal {
+      padding: 1.5rem;
+    }
+  
+    .modal-section h3 {
+      font-size: 1.1rem;
+    }
+  }
+  

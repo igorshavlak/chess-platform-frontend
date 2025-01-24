@@ -1,0 +1,73 @@
+/* src/components/HeroSection/HeroSection.css */
+
+.hero-section {
+    width: 100%;
+    height: 60vh;
+    background-image: url('D:\chess-frontend-gpt\chess-demo\src\assets\chess-wallpapers-2.jpg'); /* Переконайтеся, що зображення знаходиться в public/images/ */
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .hero-section::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(30, 30, 30, 0.6); /* Темний наклад для покращення читабельності тексту */
+  }
+  
+  .hero-content {
+    position: relative;
+    text-align: center;
+    z-index: 1;
+  }
+  
+  .hero-content h1 {
+    font-size: 3.5rem;
+    color: #f0d9b5;
+    margin-bottom: 1rem;
+  }
+  
+  .hero-content p {
+    font-size: 1.5rem;
+    color: #dddddd;
+    margin-bottom: 2rem;
+  }
+  
+  .hero-button {
+    padding: 0.75rem 2rem;
+    font-size: 1.25rem;
+    background-color: #4caf50;
+    border: none;
+    border-radius: 12px;
+    color: #ffffff;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+  }
+  
+  .hero-button:hover {
+    background-color: #43a047;
+    transform: scale(1.05);
+  }
+  
+  /* Адаптивність для HeroSection */
+  @media (max-width: 768px) {
+    .hero-section {
+      height: 40vh;
+    }
+  
+    .hero-content h1 {
+      font-size: 2.5rem;
+    }
+  
+    .hero-content p {
+      font-size: 1.2rem;
+    }
+  }
+  

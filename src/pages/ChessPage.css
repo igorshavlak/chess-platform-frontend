@@ -1,0 +1,67 @@
+/* src/pages/ChessPage/ChessPage.css */
+.chess-page {
+  /* Якщо Sidebar фіксований ліворуч (220px) */
+  margin-left: 220px;
+  min-height: 100vh;
+  background-color: #2e2e2e;
+  display: flex;
+  flex-direction: column;
+  transition: margin-left 0.3s;
+}
+
+/* Контейнер: ліва панель, дошка, права панель */
+.chess-game-container {
+  display: flex;
+  flex-direction: row;
+
+  /* ТЯГНЕ ВСІ ЕЛЕМЕНТИ ПО ВИСОТІ */
+  align-items: stretch;
+
+  padding: 2.5rem;
+  gap: 3.75rem;
+  flex-grow: 1;
+  overflow: hidden;
+  transition: padding 0.3s, gap 0.3s;
+}
+
+/* Адаптив тощо (залишимо ваші приклади). */
+@media (max-width: 1600px) {
+  .chess-game-container {
+    padding: 2rem;
+    gap: 3rem;
+  }
+}
+@media (max-width: 1400px) {
+  .chess-game-container {
+    padding: 1.5rem;
+    gap: 2.5rem;
+  }
+}
+@media (max-width: 1200px) {
+  .chess-page {
+    margin-left: 0;
+    flex-direction: column;
+  }
+  .chess-game-container {
+    flex-direction: column;
+    align-items: center;
+    padding: 5rem 1.25rem 1.25rem 1.25rem;
+    gap: 2.5rem;
+  }
+  .info-panel {
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+  }
+}
+@media (max-width: 768px) {
+  .chess-game-container {
+    padding: 5rem 0.625rem 0.625rem 0.625rem;
+    gap: 1.25rem;
+  }
+  .info-panel {
+    width: 100%;
+    max-width: none;
+    height: auto;
+  }
+}

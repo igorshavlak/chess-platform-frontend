@@ -1,0 +1,182 @@
+/* InfoPanel.css */
+
+/* Основний контейнер з лівого боку */
+.left-panel {
+  width: 260px;
+  min-width: 260px;
+  background: #1e1e1e;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+  color: #fff;
+  gap: 20px;
+  position: relative;
+
+  /* Якщо потрібно, щоби тягнулося по висоті (у поєднанні з align-items: stretch):
+     height: 100%;
+     overflow: hidden;
+  */
+}
+
+/* Шапка панелі (логотип, текст) */
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  opacity: 0.9;
+  color: #ccc;
+}
+.panel-header svg {
+  opacity: 0.8;
+}
+
+/* Обгортка з двома гравцями */
+.players-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: relative;
+}
+
+.vs-label {
+  text-align: center;
+  font-weight: bold;
+  color: #4caf50;
+  font-size: 18px;
+  margin-top: -10px; /* суто візуальний ефект */
+}
+
+/* Картка одного гравця */
+.player-info {
+  background: #2b2b2b;
+  border-radius: 12px;
+  padding: 15px;
+  transition: transform 0.3s, background-color 0.3s;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.player-info.active {
+  background-color: #4caf50;
+  transform: scale(1.02);
+}
+
+/* Верхній блок у картці гравця (аватар + деталі) */
+.player-top {
+  display: flex;
+  gap: 10px;
+}
+
+/* Аватар */
+.player-avatar img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #555;
+}
+
+/* Деталі гравця (імʼя, рейтинг, іконки) */
+.player-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.player-name {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+.player-rating {
+  margin: 2px 0;
+  font-size: 14px;
+  color: #ccc;
+}
+.player-stats {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #ccc;
+}
+.icon-stats {
+  color: #f05742; /* помаранчевий/червоний відтінок вогню */
+}
+
+/* Контейнер з часом */
+.player-time-container {
+  display: flex;
+  justify-content: space-between;
+  background-color: #333;
+  border-radius: 8px;
+  padding: 8px 12px;
+  align-items: center;
+}
+.player-time-label {
+  font-size: 14px;
+  color: #f0d9b5;
+}
+.player-time-value {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* Статус гри */
+.game-status {
+  background: #2b2b2b;
+  border-radius: 12px;
+  padding: 10px;
+  font-size: 14px;
+  text-align: center;
+}
+.game-status h4 {
+  margin: 0;
+  font-size: 14px;
+  color: #ccc;
+  opacity: 0.8;
+  margin-bottom: 6px;
+}
+.game-status p {
+  margin: 0;
+  font-size: 13px;
+  color: #fff;
+  opacity: 0.9;
+}
+
+/* -----------------------
+   Захоплені фігури
+------------------------ */
+.captured-section {
+  background: #2b2b2b;
+  border-radius: 12px;
+  padding: 10px;
+  font-size: 14px;
+}
+
+.captured-section h3 {
+  margin: 0 0 6px;
+  font-size: 16px;
+  text-align: center;
+}
+
+.captured-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.captured-icons {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.captured-piece {
+  font-size: 18px;
+}

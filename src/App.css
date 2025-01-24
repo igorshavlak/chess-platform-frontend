@@ -1,0 +1,44 @@
+/* index.css або App.css */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+}
+/* App.css */
+
+body {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  background-color: #2e2e2e;
+}
+.app-container {
+  display: flex;
+  height: 100vh;
+  background-color: #2e2e2e;
+}
+
+.sidebar {
+  z-index: 1000; /* Забезпечує, що Sidebar завжди поверх основного контенту */
+}
+
+.main-content {
+  flex: 1;
+  margin-left: 220px; /* Відступ для Sidebar */
+  overflow-y: auto;
+  padding: 1rem;
+  background-color: #2e2e2e;
+  transition: margin-left 0.3s;
+}
+
+@media (max-width: 1200px) {
+  .main-content {
+    margin-left: 0; /* Видаляємо відступ для Sidebar на менших екранах */
+    padding-top: 60px; /* Відступ зверху для фіксованого Sidebar */
+  }
+}

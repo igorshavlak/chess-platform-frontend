@@ -1,0 +1,177 @@
+/* src/components/RightInfoPanel/RightInfoPanel.css */
+.right-panel {
+    flex: 0 0 350px; /* змініть на свій смак (300-400px) */
+    height: 100%;
+    background-color: #1e1e1e;
+    border-radius: 12px;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    gap: 16px;
+    padding: 16px;
+  }
+  
+  /* Блок ходів */
+  .moves-section {
+    background-color: #2a2a2a;
+    border-radius: 8px;
+    padding: 10px;
+  }
+  .moves-section h3 {
+    margin: 0 0 8px;
+    font-size: 16px;
+  }
+  .moves-list {
+    max-height: 140px;
+    overflow-y: auto;
+    background: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 6px;
+    padding: 6px;
+  }
+  .moves-list ol {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .moves-list li {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 4px;
+    font-size: 14px;
+  }
+  .move-number {
+    font-weight: bold;
+    color: #f0d9b5;
+    width: 24px;
+    text-align: right;
+  }
+  .white-move {
+    color: #fff;
+  }
+  .black-move {
+    color: #ccc;
+  }
+  
+  /* Кнопки */
+  .control-buttons {
+    background: #2a2a2a;
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .control-buttons button {
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 14px;
+    background-color: #444;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    justify-content: center;
+    transition: background-color 0.3s;
+  }
+  .control-buttons button:hover {
+    background-color: #555;
+  }
+  .btn-resign {
+    background-color: #d9534f; /* Червоний */
+  }
+  .btn-offer-draw {
+    background-color: #5bc0de; /* Голубий */
+  }
+  .move-navigation {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+  
+  /* Чат */
+  .chat-section {
+    background: #2a2a2a;
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* розтягнеться, займаючи решту простору */
+  }
+  .chat-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    margin-bottom: 8px;
+    opacity: 0.8;
+  }
+  .chat-messages {
+    flex-grow: 1;
+    overflow-y: auto;
+    background: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 6px;
+    padding: 6px;
+    margin-bottom: 8px;
+  }
+  .chat-message {
+    margin-bottom: 6px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 4px;
+    padding: 4px 6px;
+  }
+  .message-sender {
+    font-size: 12px;
+    font-weight: bold;
+    color: #f0d9b5;
+  }
+  .message-text {
+    font-size: 13px;
+    color: #fff;
+    margin-left: 8px;
+  }
+  .message-time {
+    font-size: 11px;
+    color: #bbb;
+    margin-left: 8px;
+  }
+  .chat-input {
+    display: flex;
+    gap: 6px;
+  }
+  .chat-input input {
+    flex-grow: 1;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #444;
+    background: #1e1e1e;
+    color: #fff;
+  }
+  .chat-input button {
+    background-color: #4caf50;
+    border: none;
+    border-radius: 6px;
+    padding: 0 12px;
+    cursor: pointer;
+    color: #fff;
+    transition: background-color 0.3s;
+  }
+  .chat-input button:hover {
+    background-color: #45a049;
+  }
+  
+  /* Кастомний скрол */
+  .moves-list::-webkit-scrollbar,
+  .chat-messages::-webkit-scrollbar {
+    width: 8px;
+  }
+  .moves-list::-webkit-scrollbar-thumb,
+  .chat-messages::-webkit-scrollbar-thumb {
+    background-color: #555;
+    border-radius: 4px;
+  }
+  
