@@ -185,3 +185,60 @@
     transform: translateY(0);
   }
 }
+
+/* src/components/Sidebar/UserInfo.css */
+
+.user-info {
+  margin-top: auto; /* Размещаем информацию о пользователе внизу сайдбара */
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding: 1rem 0;
+  border-top: 1px solid #333333;
+}
+
+.user-avatar, .default-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 0.5rem;
+}
+
+.default-avatar {
+  font-size: 3rem;
+  color: #cccccc;
+}
+
+.user-details {
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.username {
+  display: block;
+  font-weight: bold;
+  color: #f0d9b5;
+}
+
+.email {
+  display: block;
+  font-size: 0.875rem;
+  color: #cccccc;
+}
+
+.logout-button {
+  background-color: #f44336;
+  color: #ffffff;
+  border: none;
+  padding: 0.5rem 1rem;
+  margin-top: 0.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+}
+
+.logout-button:hover {
+  background-color: #d32f2f;
+}

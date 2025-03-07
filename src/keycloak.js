@@ -7,4 +7,5 @@ const keycloak = new Keycloak({
   clientId: 'chessapp-frontend',
 });
 
+
 export default keycloak;

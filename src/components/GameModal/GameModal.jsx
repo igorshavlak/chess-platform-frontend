@@ -1,7 +1,7 @@
 // src/components/GameModal/GameModal.jsx
 import React from 'react';
 import Modal from 'react-modal';
-import { FaChess, FaChessKnight, FaHistory, FaCog } from 'react-icons/fa';
+import { FaChess, FaChessKnight, FaHistory, FaCog, FaUsers } from 'react-icons/fa'; // Додано FaUsers для випадкового гравця
 import './GameModal.css';
 
 function GameModal({
@@ -16,7 +16,8 @@ function GameModal({
   isRated,
   setIsRated,
   startNewGame,
-  renderTimeOptions
+  renderTimeOptions,
+  isLoading // Додано проп для стану завантаження
 }) {
   return (
     <Modal
@@ -29,8 +30,8 @@ function GameModal({
       <h2>Виберіть параметри гри</h2>
       <button className="close-button" onClick={onRequestClose} aria-label="Закрити">&times;</button>
       
-      {/* Вибір режиму гри */}
-      <div className="modal-section">
+          {/* Секція вибору режиму гри */}
+          <div className="modal-section">
         <h3>Виберіть режим гри</h3>
         <div className="cards-container">
           <div
@@ -69,10 +70,10 @@ function GameModal({
         {renderTimeOptions()}
       </div>
 
-      {/* Вибір опонента */}
+      {/* Секція вибору опонента */}
       <div className="modal-section">
         <h3>Виберіть опонента</h3>
-        <div className="cards-container">
+        <div className="cards-container opponent-selection">
           <div
             className={`card ${selectedOpponent === 'ai' ? 'selected' : ''}`}
             onClick={() => setSelectedOpponent('ai')}
@@ -89,9 +90,17 @@ function GameModal({
             <h4>Грати з другом</h4>
             <p>Змагайтеся з іншим гравцем на тому ж пристрої.</p>
           </div>
+          <div
+            className={`card ${selectedOpponent === 'random' ? 'selected' : ''}`}
+            onClick={() => setSelectedOpponent('random')}
+          >
+            <FaUsers className="card-icon" />
+            <h4>Випадковий гравець</h4>
+            <p>Знайдіть випадкового онлайн опонента.</p>
+          </div>
         </div>
       </div>
-
+      
       {/* Вибір рейтингу гри */}
       <div className="modal-section">
         <h3>Рейтинговий режим</h3>
@@ -105,9 +114,17 @@ function GameModal({
         </label>
       </div>
 
+      {/* Індикатор завантаження */}
+      {isLoading && (
+        <div className="loading-overlay">
+          <div className="spinner"></div>
+          <p>Пошук опонента...</p>
+        </div>
+      )}
+
       {/* Кнопка старту гри */}
       <div className="modal-actions">
-        <button className="start-game-button" onClick={startNewGame}>
+        <button className="start-game-button" onClick={startNewGame} disabled={isLoading}>
           Старт
         </button>
       </div>

@@ -4,10 +4,13 @@ import { useNavigate } from 'react-router-dom';
 import HeroSection from '../components/HeroSection/HeroSection.jsx';
 import GameModal from '../components/GameModal/GameModal.jsx';
 import Sidebar from '../components/Sidebar/Sidebar.jsx';
+import { enqueuePlayer } from '../api/StartPageApi.js';
+import { useKeycloak } from '@react-keycloak/web';
 import './StartPage.css';
 
 function StartPage() {
   const navigate = useNavigate();
+  const { keycloak } = useKeycloak();
 
   // Стан для модального вікна
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -38,7 +41,7 @@ function StartPage() {
       alert("Будь ласка, виберіть режим гри.");
       return;
     }
-
+ 
     const modesRequiringTime = ['blitz', 'bullet', 'custom'];
     if (modesRequiringTime.includes(selectedMode) && !selectedTime) {
       alert("Будь ласка, виберіть час для гри.");
@@ -49,7 +52,27 @@ function StartPage() {
       alert("Будь ласка, виберіть опонента.");
       return;
     }
+    if(selectedOpponent == "random") {
 
+    const defaultTime = selectedMode === 'classic' && !selectedTime ? '10+0' : selectedTime;
+    const queueKey = `queue:${selectedMode}:${defaultTime}:${isRated ? 'ranked' : 'unranked'}`;
+      const enqueueData = {
+        userId: keycloak.tokenParsed.sub,          
+        ranked: isRated,                             
+        rating: isRated ? keycloak.tokenParsed.rating : null,  
+        queueKey: queueKey                       
+      };
+      enqueuePlayer(enqueueData, keycloak.token)
+      .then(response => {
+        console.log("Player was added to queue:", response);
+      })
+      .catch(error => {
+        console.error("Error while sending request:", error);
+      });
+
+    }
+
+    /*
     // Перенаправлення до гри з обраними параметрами
     navigate('/game', {
       state: {
@@ -59,6 +82,7 @@ function StartPage() {
         isRated: isRated
       }
     });
+    */
 
     // Закриття модального вікна після старту гри
     closeModal();

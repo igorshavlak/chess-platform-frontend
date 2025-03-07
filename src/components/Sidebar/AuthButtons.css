@@ -1,0 +1,25 @@
+/* src/components/AuthButtons.css */
+
+.auth-buttons {
+    margin-top: auto; /* Размещаем кнопки внизу сайдбара */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .auth-button {
+    background-color: #4caf50;
+    color: #ffffff;
+    border: none;
+    padding: 0.5rem 1rem;
+    margin: 0.5rem 0;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+  }
+  
+  .auth-button:hover {
+    background-color: #45a049;
+  }
+  
