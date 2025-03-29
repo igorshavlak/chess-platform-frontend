@@ -1,14 +1,33 @@
 /* src/components/ChessboardComponent/ChessboardComponent.css */
 .board-wrapper {
-  width: 100%; 
-  max-width: 1500px; 
-  height: auto;
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.chessboard {
-  width: 100%;
-  height: 100%;
+/* Custom styling for the board pieces and squares */
+.board-wrapper .piece {
+  will-change: transform;
+  transition: transform 0.2s ease;
+}
+
+.board-wrapper .piece:hover {
+  transform: scale(1.1);
+  z-index: 2;
+}
+
+/* Custom highlighting for squares */
+.highlight-square {
+  box-shadow: inset 0 0 0 3px rgba(255, 215, 0, 0.7);
+}
+
+/* Make sure the chessboard is fully responsive */
+@media (max-width: 768px) {
+  .board-wrapper {
+    width: 100vw;
+    max-width: 100%;
+    height: auto;
+  }
 }

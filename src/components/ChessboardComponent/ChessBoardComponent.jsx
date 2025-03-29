@@ -1,9 +1,9 @@
 // src/components/ChessboardComponent/ChessboardComponent.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { Chessboard } from 'react-chessboard';
-import './ChessboardComponent.css'; // Підключаємо стилі для ChessboardComponent
+import './ChessboardComponent.css';
 
-function ChessboardComponent({ fen, onPieceDrop, customSquareStyles }) {
+function ChessboardComponent({ fen, onPieceDrop, customSquareStyles, boardOrientation }) {
   const boardWrapperRef = useRef(null);
   const [boardWidth, setBoardWidth] = useState(0);
 
@@ -35,6 +35,7 @@ function ChessboardComponent({ fen, onPieceDrop, customSquareStyles }) {
           customLightSquareStyle={{ backgroundColor: '#eeeed2' }}
           customSquareStyles={customSquareStyles}
           transitionDuration={300}
+          boardOrientation={boardOrientation}  
         />
       )}
     </div>

@@ -1,81 +1,67 @@
 import React, { useEffect, useState } from 'react';
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
+import { useNavigate } from 'react-router-dom';
 
 const NOTIFICATIONS_URL = 'http://localhost:8082/ws-notifications';
 const GAME_SERVICE_URL = 'http://localhost:8082/ws-game';
 
 const NotificationsComponent = ({ userId, token }) => {
   const [notifications, setNotifications] = useState([]);
-  const [gameClient, setGameClient] = useState(null); // Missing state declaration
+  const navigate = useNavigate();
 
   useEffect(() => {
-
     const socket = new SockJS(NOTIFICATIONS_URL);
     const stompClient = new Client({
       webSocketFactory: () => socket,
-       connectHeaders: {
-        Authorization: `Bearer ${token}`,
-         
-       },
-      reconnectDelay: 5000,
-      onConnect: () => {  
-        console.log('Підключення до сервера нотифікацій встановлено');
-        // Підписка на канал повідомлень для конкретного користувача
-        stompClient.subscribe(`/topic/notifications/${userId}`, (message) => {
-          if (message.body) {
-            console.log('Отримано повідомлення:', message.body);
-            setNotifications((prev) => [...prev, message.body]);
-          }
-        });
-        stompClient.subscribe(`/topic/notifications/gameFound/${userId}`, (message) => {
-          if (message.body) {
-            console.log('Отримано повідомлення:', message.body);
-            setNotifications((prev) => [...prev, message.body]);
-            const gameId = message.body.split("Game was found:")[1].trim();
-              //createGameWebSocketSession(gameId);
-          }
-        });
-      },
-      onStompError: (frame) => {
-        console.error('Stomp помилка:', frame);
-      },
-    });
-
-    stompClient.activate();
-    return () => {
-      stompClient.deactivate();
-    };
-  }, [userId, token]);
-
-  const createGameWebSocketSession = (gameId) => {
-    console.log("Створення сесії для гри:", gameId);
-    const gameSocket = new SockJS(GAME_SERVICE_URL);
-    const gameStompClient = new Client({
-      webSocketFactory: () => gameSocket,
       connectHeaders: {
         Authorization: `Bearer ${token}`,
       },
       reconnectDelay: 5000,
       onConnect: () => {
-        console.log(`Підключення до сервісу гри для гри ${gameId} встановлено`);
-        gameStompClient.subscribe(`/topic/game/${gameId}`, (message) => {
-          console.log("Оновлення гри:", message.body);
+        console.log('Подключение к серверу уведомлений установлено');
+
+        // Подписка на личные уведомления
+        stompClient.subscribe(`/topic/notifications/${userId}`, (message) => {
+          if (message.body) {
+            console.log('Получено уведомление:', message.body);
+            setNotifications((prev) => [...prev, message.body]);
+          }
+        });
+
+        // Подписка на уведомления о создании/поиске игры
+        stompClient.subscribe(`/topic/notifications/gameFound/${userId}`, (message) => {
+          if (message.body) {
+            console.log('Получено уведомление о найденной игре:', message.body);
+            setNotifications((prev) => [...prev, message.body]);
+            const afterPrefix = message.body.split('Game was found:')[1];
+            if (afterPrefix) {
+              const [rawGameId, color] = afterPrefix.split(':');
+              const gameId = rawGameId.trim();
+
+              // Переходим на страницу игры, передаём color через state
+              navigate(`/game/${gameId}`, { state: { color } });
+            }
+          }
         });
       },
       onStompError: (frame) => {
-        console.error("Game Stomp помилка:", frame);
+        console.error('STOMP ошибка:', frame);
       },
     });
-    gameStompClient.activate();
-    setGameClient(gameStompClient);
-  };
+
+    stompClient.activate();
+
+    return () => {
+      stompClient.deactivate();
+    };
+  }, [userId, token, navigate]);
 
   return (
     <div>
-      <h2>Нотифікації</h2>
+      <h2>Уведомления</h2>
       {notifications.length === 0 ? (
-        <p>Немає нових повідомлень</p>
+        <p>Нет новых уведомлений</p>
       ) : (
         <ul>
           {notifications.map((msg, idx) => (

@@ -1,4 +1,3 @@
-// src/components/Sidebar/Sidebar.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { NavLink } from 'react-router-dom';
 import {
@@ -109,17 +108,19 @@ function Sidebar() {
       {/* Добавляем секцию с информацией о пользователе */}
       {keycloak.authenticated && user && (
         <div className="user-info">
-          {user.avatar ? (
-            <img src={user.avatar} alt="User Avatar" className="user-avatar" />
-          ) : (
-            <FaUserCircle className="default-avatar" />
-          )}
-          <div className="user-details">
-            <span className="username">{user.username}</span>
-            <span className="email">{user.email}</span>
-          </div>
+          <NavLink to="/profile" className="profile-link" onClick={() => setIsActive(false)}>
+            {user.avatar ? (
+              <img src={user.avatar} alt="User Avatar" className="user-avatar" />
+            ) : (
+              <FaUserCircle className="default-avatar" />
+            )}
+            <div className="user-details">
+              <span className="username">{user.username}</span>
+              <span className="email">{user.email}</span>
+            </div>
+          </NavLink>
           <button onClick={() => keycloak.logout()} className="logout-button">
-            Выйти
+            Вийти
           </button>
         </div>
       )}
@@ -127,7 +128,7 @@ function Sidebar() {
       {!keycloak.authenticated && (
         <div className="auth-buttons">
           <button onClick={() => keycloak.login()} className="auth-button">
-            Войти
+            Увійти
           </button>
         </div>
       )}

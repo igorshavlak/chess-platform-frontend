@@ -1,3 +1,4 @@
+/* Загальний контейнер */
 .app-container {
   display: flex;
   height: 100vh;
@@ -19,26 +20,19 @@
 /* Основний контент */
 .main-content {
   display: flex;
+  flex-direction: row !important;
   flex: 1;
   height: 100%;
   padding: 1rem;
-  overflow: hidden;
-}
-
-/* Новий контейнер для шахів і панелі аналізу поруч */
-.chess-analysis-container {
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  height: 100%;
   gap: 1.5rem;
+  overflow: hidden;
 }
 
 /* Секція з дошкою та смугою оцінки */
 .board-section {
   display: flex;
   flex-direction: row;
-  flex: 1;
+  flex: 3;
   gap: 1rem;
   position: relative;
   align-items: center;
@@ -47,10 +41,10 @@
 
 /* Контейнер для шахової дошки */
 .chessboard-container {
-  width: 600px;
-  height: 600px;
-  min-width: 400px;
-  min-height: 400px;
+  width: calc(100vh - 10rem);
+  height: calc(100vh - 10rem);
+  min-width: 500px;
+  min-height: 500px;
   max-width: 90%;
   max-height: 90vh;
   background-color: #333;
@@ -106,23 +100,21 @@
   color: #fff;
 }
 
-/* Секція для ходів */
+/* Панель ходів */
 .moves-section {
   display: flex;
   flex-direction: column;
   width: 340px;
   min-width: 300px;
-  max-width: 340px;
   height: 100%;
   background-color: #2e2e2e;
   border-radius: 6px;
   padding: 1rem;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   overflow: hidden;
-  flex-shrink: 0; /* Запобігає стисканню панелі при зміні розміру */
 }
 
-/* Навігаційні кнопки */
+/* Кнопки навігації */
 .navigation-buttons {
   display: flex;
   gap: 0.5rem;
@@ -151,6 +143,7 @@
   cursor: not-allowed;
 }
 
+/* Контейнер з історією ходів */
 .move-history {
   flex: 1;
   overflow-y: auto;
@@ -158,59 +151,63 @@
   border-radius: 6px;
   padding: 0.75rem;
   margin-bottom: 0.75rem;
-  display: flex;
-  flex-direction: column;
-  min-height: 200px;
 }
 
-.move-row {
-  display: flex;
-  align-items: center;
-  margin-bottom: 0.25rem;
+/* Таблиця історії ходів */
+.move-history-table {
   width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
 }
 
-.move-number {
-  width: 25px;
-  min-width: 25px;
-  color: #aaa;
-  font-weight: 500;
-  text-align: right;
-  margin-right: 0.5rem;
-}
-
-.move-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.3rem 0.5rem;
-  border-radius: 4px;
-  margin-right: 0.4rem;
-  cursor: pointer;
-  background-color: #333;
+.move-history-table th,
+.move-history-table td {
+  border-bottom: 1px solid #333;
+  padding: 0.5rem;
+  text-align: center;
   color: #eee;
-  font-size: 0.9rem;
-  transition: all 0.2s;
-  flex: 1;
+  vertical-align: middle;
+}
+
+.move-history-table th {
+  background-color: #333;
+  font-weight: 600;
+}
+
+/* Номер ходу */
+.move-number {
+  width: 2rem;
+  color: #bbb;
   font-weight: 500;
 }
 
-.move-item:hover {
+/* Клітинки ходів */
+.move-cell {
+  background-color: #333;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+  border-radius: 4px;
+}
+
+.move-cell:hover {
   background-color: #444;
+  transform: translateY(-1px);
 }
 
-.current-move {
-  background-color: #1976d2;
-  color: #fff;
+/* Підсвічування поточного ходу */
+.current-move-cell {
+  background-color: #4caf50 !important;
+  color: #fff !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-.move-eval {
-  margin-left: 0.5rem;
-  font-weight: bold;
-  font-size: 0.9rem;
+/* Клітинка з оцінкою */
+.move-eval-cell {
+  color: #eee;
+  min-width: 3rem;
 }
 
-/* Інформація про аналіз */
+/* Інформаційний блок аналізу */
 .analysis-info {
   padding: 0.75rem;
   background-color: #333;
@@ -219,6 +216,7 @@
   line-height: 1.4;
   max-height: 180px;
   overflow-y: auto;
+  margin-top: 0.5rem;
 }
 
 .analysis-info p {
@@ -233,32 +231,46 @@
   font-weight: bold;
 }
 
-/* Медіа-запити для адаптивності */
-@media (max-width: 1024px) {
-  .chess-analysis-container {
-    flex-direction: column;
-    align-items: center;
+/* Додаткові стилі для блоку ефемерного аналізу (варіанту) */
+.ephemeral-analysis {
+  margin-top: 0.5rem;
+  background-color: #444;
+  border-radius: 6px;
+  padding: 0.75rem;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: #eee;
+}
+
+@media (max-width: 1200px) {
+  .main-content {
+    flex-direction: row !important;
+    gap: 1rem;
   }
-  
   .board-section {
-    width: 100%;
-    margin-bottom: 1rem;
+    flex: 3;
+    margin-bottom: 0;
   }
-  
   .moves-section {
-    width: 100%;
-    max-width: 100%;
+    width: 340px;
+    min-width: 300px;
+    max-width: 340px;
     height: auto;
+    max-height: none;
   }
 }
 
 @media (max-width: 768px) {
-  .chessboard-container {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 1/1;
+  .main-content {
+    flex-direction: column !important;
   }
-  
+  .chessboard-container {
+    max-height: 60vh;
+  }
+  .moves-section {
+    width: 100%;
+    max-width: 100%;
+  }
   .analysis-type-buttons,
   .analysis-buttons {
     flex-direction: column;
@@ -270,11 +282,9 @@
   .main-content {
     padding: 0.5rem;
   }
-  
   .move-history {
     padding: 0.5rem;
   }
-  
   .navigation-buttons button {
     padding: 0.4rem 0;
   }
