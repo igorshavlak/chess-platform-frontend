@@ -10,7 +10,8 @@ import {
   FaChartLine,
   FaBars,
   FaTimes,
-  FaUserCircle
+  FaUserCircle,
+  FaUserFriends
 } from 'react-icons/fa';
 import { useKeycloak } from '@react-keycloak/web';
 import './Sidebar.css';
@@ -68,6 +69,7 @@ function Sidebar() {
             <span>Головна</span>
           </NavLink>
         </li>
+        
         <li>
           <NavLink to="/game" className="nav-link" onClick={() => setIsActive(false)}>
             <FaChess className="icon" />
@@ -99,9 +101,9 @@ function Sidebar() {
           </NavLink>
         </li>
         <li>
-          <NavLink to="/about" className="nav-link" onClick={() => setIsActive(false)}>
-            <FaInfoCircle className="icon" />
-            <span>Про нас</span>
+          <NavLink to="/social" className="nav-link" onClick={() => setIsActive(false)}>
+            <FaUserFriends className="icon" />
+            <span>Спілкування</span>
           </NavLink>
         </li>
       </ul>

@@ -712,3 +712,221 @@
       text-align: center;
     }
   }
+  /* Additions to UserProfilePage.css for Friends and Clubs */
+
+/* Common styles for friends and clubs sections */
+.filter-search-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  background-color: #444;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  flex: 1;
+  max-width: 400px;
+}
+
+.search-icon {
+  color: #aaa;
+  margin-right: 0.5rem;
+}
+
+.search-input {
+  background: none;
+  border: none;
+  color: #e0e0e0;
+  font-size: 0.9rem;
+  width: 100%;
+  outline: none;
+}
+
+.search-input::placeholder {
+  color: #888;
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.filter-btn {
+  background-color: #444;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  color: #ccc;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filter-btn:hover {
+  background-color: #555;
+}
+
+.filter-btn.active {
+  background-color: #4caf50;
+  color: white;
+}
+
+.no-results {
+  background-color: #3a3a3a;
+  padding: 2rem;
+  text-align: center;
+  border-radius: 0.5rem;
+  color: #aaa;
+}
+
+/* Friends list styles */
+.friends-container h3,
+.clubs-container h3 {
+  color: #f0d9b5;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.friends-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.friend-card {
+  display: flex;
+  background-color: #3a3a3a;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  position: relative;
+  align-items: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.friend-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.friend-status-indicator {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.friend-status-indicator.online {
+  background-color: #4caf50;
+  box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
+}
+
+.friend-status-indicator.offline {
+  background-color: #aaa;
+}
+
+.friend-avatar {
+  margin-right: 1rem;
+}
+
+.default-avatar.small {
+  width: 50px;
+  height: 50px;
+  font-size: 1.5rem;
+}
+
+.friend-info {
+  flex: 1;
+}
+
+.friend-name {
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-bottom: 0.25rem;
+  color: #f0d9b5;
+}
+
+.friend-rating {
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.friend-last-seen {
+  font-size: 0.8rem;
+  color: #aaa;
+}
+
+.friend-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.friend-action-btn {
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.friend-action-btn.challenge {
+  background-color: #ff9800;
+  color: white;
+}
+
+.friend-action-btn.challenge:hover {
+  background-color: #e68a00;
+}
+
+.friend-action-btn.message {
+  background-color: #2196f3;
+  color: white;
+}
+
+.friend-action-btn.message:hover {
+  background-color: #0b7dda;
+}
+
+/* Clubs list styles */
+.clubs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.club-card {
+  display: flex;
+  background-color: #3a3a3a;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  align-items: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.club-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.club-avatar {
+  margin-right: 1.5rem;
+}
+
+.default-avatar.club {
+  width: 60px;
+  height: 60px;
+  font-size: 1.8rem;
+  background-color: #9c27b0;
+}
+

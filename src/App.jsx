@@ -8,6 +8,7 @@ import ChessPage from './pages/ChessPage.jsx';
 import StartPage from './pages/StartPage.jsx';
 import TasksModePage from './pages/TasksModesPage.jsx';
 import UserProfilePage from './pages/UserProfilePage.jsx';
+import SocialPage from './pages/SocialPage.jsx';
 import AnalysisPage from './pages/AnalysisPage.jsx';
 import ChessPuzzlePage from './pages/ChessPuzzlePage.jsx'; // Додаємо новий компонент
 import NotificationComponent from './components/NotificationComponent.jsx'; 
@@ -35,6 +36,7 @@ function App() {
       <Routes>
         <Route path="/tasks" element={<TasksModePage/>} />
         <Route path="/analysis" element={<AnalysisPage/>} />
+        <Route path="/social" element={<SocialPage />} />
         <Route path="/" element={<HomePage />} />
         <Route path="/game/:gameId" element={<ChessPage />} />
         {/* Маршрути для шахових задач */}

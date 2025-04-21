@@ -1,0 +1,129 @@
+/* src/pages/SocialPage.css */
+
+.page-container {
+    display: flex;
+    min-height: 100vh;
+    background-color: #282828;
+    color: #ffffff;
+  }
+  
+  .main-content {
+    flex: 1;
+    padding: 2rem;
+    margin-left: 220px; /* Відступ для сайдбару */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Центрує вміст по горизонталі */
+    width: 100%;
+  }
+  
+  .social-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #333333;
+    text-align: center; /* Центрує текст заголовка */
+    width: 100%;
+    max-width: 1200px;
+  }
+  
+  .social-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    color: #f0d9b5;
+  }
+  
+  .social-header p {
+    font-size: 1.125rem;
+    color: #cccccc;
+  }
+  
+  .social-features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, auto);
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: calc(100% - 220px); /* Врахування ширини сайдбару для центрування */
+    position: relative;
+    right: 110px; /* Половина від відступу сайдбару для центрування */
+  }
+  
+  .social-feature-card {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    background-color: #333333;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+    height: 100%;
+    min-height: 200px;
+  }
+  
+  .social-feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  }
+  
+  .feature-icon-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem 0;
+  }
+  
+  .feature-icon {
+    font-size: 4rem;
+    color: rgba(255, 255, 255, 0.9);
+  }
+  
+  .feature-content {
+    padding: 1.5rem;
+    background-color: rgba(0, 0, 0, 0.2);
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .feature-content h2 {
+    margin-bottom: 0.75rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  
+  .feature-content p {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+  
+  /* Адаптивний дизайн */
+  @media (max-width: 1200px) {
+    .main-content {
+      margin-left: 0;
+      padding-top: 80px; /* Простір для навігації у мобільній версії */
+    }
+    
+    .social-features-grid {
+      grid-template-columns: repeat(2, 1fr);
+      width: 100%;
+      right: 0;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .social-features-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .social-header h1 {
+      font-size: 2rem;
+    }
+    
+    .main-content {
+      padding: 1rem;
+      padding-top: 80px;
+    }
+  }

@@ -9,7 +9,12 @@ import {
   FaHistory, 
   FaMedal, 
   FaCalendarAlt, 
-  FaUserFriends
+  FaUserFriends,
+  FaUsers,
+  FaSearch,
+  FaChessRook,
+  FaStar,
+  FaChess
 } from 'react-icons/fa';
 import './UserProfilePage.css';
 
@@ -19,6 +24,10 @@ function UserProfilePage() {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('stats');
+  const [friendsData, setFriendsData] = useState([]);
+  const [clubsData, setClubsData] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [friendsFilter, setFriendsFilter] = useState('all'); // 'all', 'online', 'offline'
   
   // Извлечение информации о текущем пользователе
   const currentUser = keycloak.tokenParsed
@@ -37,8 +46,6 @@ function UserProfilePage() {
   // Эмуляция загрузки данных пользователя с сервера
   useEffect(() => {
     const fetchUserData = async () => {
-      //setLoading(false);
-      
       // В реальном проекте здесь был бы API-запрос
       setTimeout(() => {
         // Симуляция данных с сервера
@@ -86,6 +93,28 @@ function UserProfilePage() {
         
         setUserData(mockUserData);
         setLoading(false);
+
+        // Mock friends data
+        const mockFriends = [
+          { id: 1, username: "ChessMaster2000", rating: 2156, online: true, lastSeen: "зараз", avatar: null },
+          { id: 2, username: "КороляваПартія", rating: 1932, online: false, lastSeen: "5 годин тому", avatar: null },
+          { id: 3, username: "ГросмейстерЛьвів", rating: 2250, online: true, lastSeen: "зараз", avatar: null },
+          { id: 4, username: "ЧемпіонКиєва", rating: 2045, online: false, lastSeen: "2 дні тому", avatar: null },
+          { id: 5, username: "ШаховаЛегенда", rating: 1876, online: false, lastSeen: "1 тиждень тому", avatar: null },
+          { id: 6, username: "ФерзевийГамбіт", rating: 1756, online: true, lastSeen: "зараз", avatar: null },
+          { id: 7, username: "ТактикМайстер", rating: 1920, online: false, lastSeen: "3 години тому", avatar: null },
+          { id: 8, username: "ДебютКороля", rating: 1845, online: true, lastSeen: "зараз", avatar: null }
+        ];
+        setFriendsData(mockFriends);
+
+        // Mock clubs data
+        const mockClubs = [
+          { id: 1, name: "Київський шаховий клуб", members: 156, rating: 1950, role: "Учасник", avatar: null },
+          { id: 2, name: "Львівські шахісти", members: 78, rating: 1820, role: "Адміністратор", avatar: null },
+          { id: 3, name: "Українська шахова ліга", members: 412, rating: 2100, role: "Учасник", avatar: null },
+          { id: 4, name: "Турнірні гравці", members: 64, rating: 1930, role: "Модератор", avatar: null }
+        ];
+        setClubsData(mockClubs);
       }, 1000);
     };
     
@@ -93,6 +122,20 @@ function UserProfilePage() {
       fetchUserData();
     }
   }, [keycloak.authenticated, profileUserId, isOwnProfile, currentUser]);
+
+  // Фильтрация друзей
+  const filteredFriends = friendsData
+    .filter(friend => {
+      const matchesSearch = friend.username.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesStatus = friendsFilter === 'all' || 
+                          (friendsFilter === 'online' && friend.online) || 
+                          (friendsFilter === 'offline' && !friend.online);
+      return matchesSearch && matchesStatus;
+    });
+
+  // Фильтрация клубов
+  const filteredClubs = clubsData
+    .filter(club => club.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
   // Рендер загрузки
   if (loading) {
@@ -260,6 +303,149 @@ function UserProfilePage() {
     </div>
   );
 
+  // Рендер списка друзей
+  const renderFriends = () => (
+    <div className="friends-container">
+      <h3><FaUserFriends /> Друзі ({userData.friends})</h3>
+      
+      <div className="filter-search-container">
+        <div className="search-box">
+          <FaSearch className="search-icon" />
+          <input 
+            type="text" 
+            placeholder="Пошук друзів..." 
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-input"
+          />
+        </div>
+        
+        <div className="filter-buttons">
+          <button 
+            className={`filter-btn ${friendsFilter === 'all' ? 'active' : ''}`}
+            onClick={() => setFriendsFilter('all')}
+          >
+            Всі
+          </button>
+          <button 
+            className={`filter-btn ${friendsFilter === 'online' ? 'active' : ''}`}
+            onClick={() => setFriendsFilter('online')}
+          >
+            Онлайн
+          </button>
+          <button 
+            className={`filter-btn ${friendsFilter === 'offline' ? 'active' : ''}`}
+            onClick={() => setFriendsFilter('offline')}
+          >
+            Офлайн
+          </button>
+        </div>
+      </div>
+      
+      <div className="friends-list">
+        {filteredFriends.length > 0 ? (
+          filteredFriends.map(friend => (
+            <div key={friend.id} className="friend-card">
+              <div className={`friend-status-indicator ${friend.online ? 'online' : 'offline'}`}></div>
+              <div className="friend-avatar">
+                {friend.avatar ? (
+                  <img src={friend.avatar} alt={`${friend.username}'s avatar`} />
+                ) : (
+                  <div className="default-avatar small">{friend.username.charAt(0).toUpperCase()}</div>
+                )}
+              </div>
+              <div className="friend-info">
+                <div className="friend-name">{friend.username}</div>
+                <div className="friend-rating">Рейтинг: {friend.rating}</div>
+                <div className="friend-last-seen">{friend.online ? 'Онлайн' : `Був(ла): ${friend.lastSeen}`}</div>
+              </div>
+              <div className="friend-actions">
+                <button className="friend-action-btn challenge">Викликати</button>
+                <button className="friend-action-btn message">Повідомлення</button>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="no-results">
+            <p>Нічого не знайдено. Спробуйте змінити пошуковий запит.</p>
+          </div>
+        )}
+      </div>
+      
+      {filteredFriends.length > 0 && filteredFriends.length < friendsData.length && (
+        <button className="load-more-btn">Показати більше друзів</button>
+      )}
+    </div>
+  );
+
+  // Рендер списка клубов
+  const renderClubs = () => (
+    <div className="clubs-container">
+      <h3><FaChessRook /> Шахові клуби</h3>
+      
+      <div className="filter-search-container">
+        <div className="search-box">
+          <FaSearch className="search-icon" />
+          <input 
+            type="text" 
+            placeholder="Пошук клубів..." 
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-input"
+          />
+        </div>
+        
+        <button className="find-clubs-btn">
+          <FaChess /> Знайти нові клуби
+        </button>
+      </div>
+      
+      <div className="clubs-list">
+        {filteredClubs.length > 0 ? (
+          filteredClubs.map(club => (
+            <div key={club.id} className="club-card">
+              <div className="club-avatar">
+                {club.avatar ? (
+                  <img src={club.avatar} alt={`${club.name} avatar`} />
+                ) : (
+                  <div className="default-avatar club">{club.name.charAt(0).toUpperCase()}</div>
+                )}
+              </div>
+              <div className="club-info">
+                <div className="club-name">
+                  {club.name}
+                  {club.role === 'Адміністратор' && <span className="club-role admin">Адмін</span>}
+                  {club.role === 'Модератор' && <span className="club-role mod">Модератор</span>}
+                </div>
+                <div className="club-stats">
+                  <div className="club-members">
+                    <FaUserFriends className="club-icon" /> {club.members} учасників
+                  </div>
+                  <div className="club-avg-rating">
+                    <FaStar className="club-icon" /> Середній рейтинг: {club.rating}
+                  </div>
+                </div>
+              </div>
+              <div className="club-actions">
+                <button className="club-action-btn visit">Відвідати клуб</button>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="no-results">
+            <p>Клубів не знайдено. Спробуйте змінити пошуковий запит.</p>
+          </div>
+        )}
+      </div>
+      
+      {filteredClubs.length > 0 && (
+        <button className="create-club-btn">
+          <FaChessRook /> Створити новий клуб
+        </button>
+      )}
+    </div>
+  );
+
   return (
     <div className="page-container">
       <Sidebar />
@@ -322,12 +508,26 @@ function UserProfilePage() {
             >
               <FaMedal /> Досягнення
             </button>
+            <button 
+              className={`tab-btn ${activeTab === 'friends' ? 'active' : ''}`}
+              onClick={() => setActiveTab('friends')}
+            >
+              <FaUserFriends /> Друзі
+            </button>
+            <button 
+              className={`tab-btn ${activeTab === 'clubs' ? 'active' : ''}`}
+              onClick={() => setActiveTab('clubs')}
+            >
+              <FaChessRook /> Клуби
+            </button>
           </div>
           
           <div className="profile-content">
             {activeTab === 'stats' && renderStats()}
             {activeTab === 'games' && renderGames()}
             {activeTab === 'achievements' && renderAchievements()}
+            {activeTab === 'friends' && renderFriends()}
+            {activeTab === 'clubs' && renderClubs()}
           </div>
         </div>
       </main>
