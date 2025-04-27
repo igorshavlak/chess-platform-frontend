@@ -1,16 +1,17 @@
-// InfoPanel.jsx
+// src/components/InfoPanel.jsx
 import React from 'react';
 import { FaFire, FaChessKing } from 'react-icons/fa';
 import './InfoPanel.css';
 
-// Компонент для відображення інформації про одного гравця
-function PlayerInfo({ player, time, isActive, color }) {
-  const formatTime = (t) => {
-    const m = Math.floor(t / 60);
-    const s = t % 60;
-    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-  };
+// Форматирование секунд в MM:SS
+const formatTime = t => {
+  const m = Math.floor(t / 60);
+  const s = t % 60;
+  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+};
 
+// Одиночная карточка игрока
+function PlayerInfo({ player, time, isActive, colorLabel }) {
   return (
     <div className={`player-info ${isActive ? 'active' : ''}`}>
       <div className="player-top">
@@ -19,33 +20,32 @@ function PlayerInfo({ player, time, isActive, color }) {
         </div>
         <div className="player-details">
           <h3 className="player-name">{player.name}</h3>
-          <p className="player-rating">{player.rating} lł</p>
+          <p className="player-rating">{player.rating} 𝚕ł</p>
           <div className="player-stats">
             <FaFire className="icon-stats" />
             <span>+1</span>
           </div>
         </div>
       </div>
-
       <div className="player-time-container">
-        <div className="player-time-label">{color}</div>
+        <div className="player-time-label">{colorLabel}</div>
         <div className="player-time-value">{formatTime(time)}</div>
       </div>
     </div>
   );
 }
 
-// Компонент для відображення статусу гри
-function GameStatus({ status }) {
+// Статус игры (заголовок + текст)
+function GameStatus({ gameMode, timeControl, status }) {
   return (
     <div className="game-status">
-      <h4>Rated mode • Challenge 3 min</h4>
+      <h4>{gameMode} • {timeControl}</h4>
       <p>{status}</p>
     </div>
   );
 }
 
-// Секція “захоплені фігури” (хто що побив)
+// Захваченные фигуры
 function CapturedSection({ capturedByWhite, capturedByBlack }) {
   return (
     <div className="captured-section">
@@ -62,73 +62,85 @@ function CapturedSection({ capturedByWhite, capturedByBlack }) {
   );
 }
 
-// Допоміжна компонента: “захоплені фігури” -> Юнікод-символи
 function CapturedIcons({ pieces, captorColor }) {
-  const pieceToUnicode = (pieceType) => {
-    const isWhite = captorColor === 'white';
-    // “p”,”r”,”n”,”b”,”q”,”k”
-    switch (pieceType.toLowerCase()) {
-      case 'p': return isWhite ? '♟' : '♙';
-      case 'r': return isWhite ? '♜' : '♖';
-      case 'n': return isWhite ? '♞' : '♘';
-      case 'b': return isWhite ? '♝' : '♗';
-      case 'q': return isWhite ? '♛' : '♕';
-      case 'k': return isWhite ? '♚' : '♔';
+  const pieceToUnicode = pt => {
+    const w = captorColor === 'white';
+    switch (pt.toLowerCase()) {
+      case 'p': return w ? '♟' : '♙';
+      case 'r': return w ? '♜' : '♖';
+      case 'n': return w ? '♞' : '♘';
+      case 'b': return w ? '♝' : '♗';
+      case 'q': return w ? '♛' : '♕';
+      case 'k': return w ? '♚' : '♔';
       default:  return '?';
     }
   };
 
   return (
     <div className="captured-icons">
-      {pieces.map((p, idx) => (
-        <span key={idx} className="captured-piece">
-          {pieceToUnicode(p)}
-        </span>
-      ))}
+      {pieces.map((p, i) => <span key={i} className="captured-piece">{pieceToUnicode(p)}</span>)}
     </div>
   );
 }
 
-// Основна панель, яка збирає все разом
-function InfoPanel({
+// Основной InfoPanel
+export default function InfoPanel({
   players,
+  localColor,      // 'w' или 'b'
   whiteTime,
   blackTime,
-  currentPlayer,
+  currentPlayer,   // 'w' или 'b'
+  gameMode,
+  timeControl,
   gameStatus,
-  // Додаємо пропси для захоплених фігур
   capturedByWhite,
   capturedByBlack
 }) {
+  // Определяем порядок: сначала локальный игрок
+  const isLocalWhite = localColor === 'w';
+  const firstColor   = isLocalWhite ? 'white' : 'black';
+  const secondColor  = isLocalWhite ? 'black' : 'white';
+
+  const firstPlayer   = players[firstColor];
+  const secondPlayer  = players[secondColor];
+  const firstTime     = firstColor === 'white' ? whiteTime : blackTime;
+  const secondTime    = secondColor === 'white' ? whiteTime : blackTime;
+  const firstActive   = currentPlayer === (firstColor === 'white' ? 'w' : 'b');
+  const secondActive  = currentPlayer === (secondColor === 'white' ? 'w' : 'b');
+
   return (
     <div className="left-panel">
-      {/* Шапка панелі */}
+      {/* Заголовок с режимом и контролем */}
       <div className="panel-header">
         <FaChessKing size={24} />
-        <span>Rated mode - Challenge 3 min</span>
+        <span>{gameMode} • {timeControl}</span>
       </div>
 
-      {/* Блок з обома гравцями */}
+      {/* Две карточки: сначала локальный игрок, потом оппонент */}
       <div className="players-wrapper">
         <PlayerInfo
-          player={players.white}
-          time={whiteTime}
-          isActive={currentPlayer === 'w'}
-          color="White"
+          player={firstPlayer}
+          time={firstTime}
+          isActive={firstActive}
+          colorLabel={firstColor === 'white' ? 'White' : 'Black'}
         />
         <div className="vs-label">VS</div>
         <PlayerInfo
-          player={players.black}
-          time={blackTime}
-          isActive={currentPlayer === 'b'}
-          color="Black"
+          player={secondPlayer}
+          time={secondTime}
+          isActive={secondActive}
+          colorLabel={secondColor === 'white' ? 'White' : 'Black'}
         />
       </div>
 
-      {/* Статус гри */}
-      <GameStatus status={gameStatus} />
+      {/* Статус игры */}
+      <GameStatus
+        gameMode={gameMode}
+        timeControl={timeControl}
+        status={gameStatus}
+      />
 
-      {/* Захоплені фігури */}
+      {/* Захваченные фигуры */}
       <CapturedSection
         capturedByWhite={capturedByWhite}
         capturedByBlack={capturedByBlack}
@@ -136,5 +148,3 @@ function InfoPanel({
     </div>
   );
 }
-
-export default InfoPanel;

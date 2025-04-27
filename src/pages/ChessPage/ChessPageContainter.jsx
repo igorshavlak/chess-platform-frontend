@@ -23,19 +23,16 @@ export default function ChessPageContainer() {
   const [whiteTime, setWhiteTime] = useState(null);
   const [blackTime, setBlackTime] = useState(null);
   const [increment, setIncrement] = useState(0);
-  const [currentPlayer, setCurrentPlayer] = useState('w');
+  const [currentPlayer, setCurrentPlayer] = useState(null);
 
   // === ігрові налаштування ===
   const [gameMode, setGameMode] = useState(null);
   const [timeControl, setTimeControl] = useState(null);
   const [gameStatus, setGameStatus] = useState('Гра йде');
   const [localColor, setLocalColor] = useState('w');
-  const [players, setPlayers] = useState({
-    white: { name: 'Я (білі)', avatar: 'https://i.pravatar.cc/150?img=32', rating: 1500 },
-    black: { name: 'Супротивник (чорні)', avatar: 'https://i.pravatar.cc/150?img=12', rating: 1450 },
-  });
   const [capturedByWhite, setCapturedByWhite] = useState([]);
   const [capturedByBlack, setCapturedByBlack] = useState([]);
+  const [players, setPlayers] = useState(null);
 
   const timerRef = useRef(null);
   const [stompClient, setStompClient] = useState(null);
@@ -48,29 +45,35 @@ export default function ChessPageContainer() {
     })
       .then(res => res.json())
       .then(data => {
+        setPlayers({
+          white: { name: 'white', avatar: 'https://i.pravatar.cc/150?img=32', rating: 1450 },
+          black: { name: 'black', avatar: 'https://i.pravatar.cc/150?img=12', rating: 1500 },
+        });
+
         game.reset();
         data.moves.forEach(m => game.move(m));
         setFen(game.fen());
         setMoves(data.moves);
+
+        // встановлюємо початкового гравця
         setCurrentPlayer(game.turn());
 
         // колір локального гравця
         if (meId === String(data.whitePlayerId)) setLocalColor('w');
         else if (meId === String(data.blackPlayerId)) setLocalColor('b');
 
-
-        // якщо бекенд віддає час у мс:
+        // час
         if (data.whiteTimeMillis != null) {
           setWhiteTime(Math.ceil(data.whiteTimeMillis / 1000));
           setBlackTime(Math.ceil(data.blackTimeMillis / 1000));
         } else {
-          // або парсити timeControl “5+2” → 300 сек
           const [base, inc] = data.timeControl.split('+').map(Number);
           setWhiteTime(base * 60);
           setBlackTime(base * 60);
           setIncrement(inc);
         }
         setGameMode(data.gameMode);
+        setTimeControl(data.timeControl);
       })
       .catch(console.error);
   }, [token, meId, gameId, game]);
@@ -89,10 +92,11 @@ export default function ChessPageContainer() {
         client.subscribe(`/topic/game/${gameId}`, ({ body }) => {
           const rsp = JSON.parse(body);
           if (rsp.senderId !== meId) {
+            // оновлюємо час
             setWhiteTime(Math.ceil(rsp.whiteTimeMillis / 1000));
             setBlackTime(Math.ceil(rsp.blackTimeMillis / 1000));
-            setCurrentPlayer(rsp.isActivePlayerWhite ? 'w' : 'b');
 
+            // застосовуємо хід
             const result = game.move(rsp.move);
             if (result) {
               setFen(game.fen());
@@ -104,6 +108,8 @@ export default function ChessPageContainer() {
                   : setCapturedByBlack(p => [...p, result.captured]);
               }
             }
+            // перемикаємо гравця
+            setCurrentPlayer(prev => (prev === 'w' ? 'b' : 'w'));
           }
         });
 
@@ -121,28 +127,19 @@ export default function ChessPageContainer() {
     return () => client.deactivate();
   }, [token, gameId, meId, game]);
 
-  // 3) Локальний таймер — стартує коли 1) час ініціалізовано або 2) змінився currentPlayer
+  // 3) Локальний таймер — стартує на зміну currentPlayer
   useEffect(() => {
-    if (whiteTime == null || blackTime == null) return;
-  
+    if (whiteTime == null || blackTime == null || currentPlayer == null) return;
     clearInterval(timerRef.current);
-    console.log('Starting timer for', currentPlayer);
-  
     timerRef.current = setInterval(() => {
-      if (currentPlayer === 'w') {
-        setWhiteTime(prev => Math.max(prev - 1, 0));
-      } else {
-        setBlackTime(prev => Math.max(prev - 1, 0));
-      }
+      if (currentPlayer === 'w') setWhiteTime(t => Math.max(t - 1, 0));
+      else setBlackTime(t => Math.max(t - 1, 0));
     }, 1000);
-  
     return () => clearInterval(timerRef.current);
   }, [currentPlayer]);
 
-  // додатково: при розмонтуванні компонента одразу прибираємо інтервал
-  useEffect(() => {
-    return () => clearInterval(timerRef.current);
-  }, []);
+  // при розмонтуванні
+  useEffect(() => () => clearInterval(timerRef.current), []);
 
   // 4) Обробка власного ходу
   const handleMove = (from, to) => {
@@ -159,14 +156,12 @@ export default function ChessPageContainer() {
         : setCapturedByBlack(p => [...p, mv.captured]);
     }
 
-    // додаємо інкремент
-    if (mv.color === 'w') setWhiteTime(prev => prev + increment);
-    else setBlackTime(prev => prev + increment);
+    if (mv.color === 'w') setWhiteTime(t => t + increment);
+    else setBlackTime(t => t + increment);
 
-    // перемикаємо
-    setCurrentPlayer(game.turn());
+    // перемикаємо гравця вручну
+    setCurrentPlayer(prev => (prev === 'w' ? 'b' : 'w'));
 
-    // відсилаємо на сервер
     if (stompClient?.active) {
       stompClient.publish({
         destination: '/app/move',
@@ -183,7 +178,7 @@ export default function ChessPageContainer() {
     setFen(game.fen());
     setMoves(game.history());
     setLastMove(null);
-    setCurrentPlayer(game.turn());
+    setCurrentPlayer(prev => (prev === 'w' ? 'b' : 'w'));
   };
   const handleRestart = () => {
     game.reset();
@@ -198,13 +193,15 @@ export default function ChessPageContainer() {
     setCurrentPlayer('w');
   };
 
+  if (whiteTime == null || blackTime == null || !players) return <div>Loading…</div>;
+
   return (
     <ChessPageUI
       fen={fen}
       onPieceDrop={handleMove}
       customSquareStyles={lastMove ? {
         [lastMove.from]: { backgroundColor: 'rgba(255,255,0,0.4)' },
-        [lastMove.to]: { backgroundColor: 'rgba(255,255,0,0.4)' },
+        [lastMove.to]:   { backgroundColor: 'rgba(255,255,0,0.4)' },
       } : {}}
       boardOrientation={localColor === 'w' ? 'white' : 'black'}
       players={players}
@@ -221,7 +218,7 @@ export default function ChessPageContainer() {
       onResign={handleResign}
       onOfferDraw={handleOfferDraw}
       onMoveBackward={handleMoveBack}
-      onMoveForward={() => { }}
+      onMoveForward={() => {}}
       onRestart={handleRestart}
     />
   );

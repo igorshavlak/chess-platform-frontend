@@ -1,3 +1,5 @@
+
+// src/pages/ChessPageUI.jsx
 import React from 'react';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import InfoPanel from '../../components/InfoPanel/InfoPanel';
@@ -10,10 +12,15 @@ const ChessPageUI = ({
   onPieceDrop,
   customSquareStyles,
   boardOrientation,
+
   players,
+  localColor,
   whiteTime,
   blackTime,
   currentPlayer,
+  gameMode,
+  timeControl,
+
   gameStatus,
   moves,
   capturedByWhite,
@@ -31,9 +38,12 @@ const ChessPageUI = ({
       <div className="left-panel-wrapper">
         <InfoPanel
           players={players}
+          localColor={localColor}
           whiteTime={whiteTime}
           blackTime={blackTime}
           currentPlayer={currentPlayer}
+          gameMode={gameMode}
+          timeControl={timeControl}
           gameStatus={gameStatus}
           capturedByWhite={capturedByWhite}
           capturedByBlack={capturedByBlack}
@@ -58,6 +68,7 @@ const ChessPageUI = ({
           onOfferDraw={onOfferDraw}
           onMoveBackward={onMoveBackward}
           onMoveForward={onMoveForward}
+          onRestart={onRestart}
         />
       </div>
     </div>

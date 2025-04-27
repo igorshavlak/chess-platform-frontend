@@ -4,7 +4,6 @@ import { useKeycloak } from '@react-keycloak/web';
 import { Navigate } from 'react-router-dom';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage.jsx';
-import ChessPage from './pages/ChessPage/ChessPage.jsx';
 import ChessPageMock from './pages/ChessPage/ChessPageMock.jsx';
 import ChessPageContainer from './pages/ChessPage/ChessPageContainter.jsx';
 import StartPage from './pages/StartPage.jsx';
