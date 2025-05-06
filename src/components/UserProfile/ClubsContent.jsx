@@ -1,6 +1,6 @@
 import React from 'react';
 import { FaSearch, FaChess, FaChessRook, FaUserFriends, FaStar } from 'react-icons/fa';
-import '../../pages/UserProfilePage.css'
+import '../../pages/UserProfilePage/UserProfilePage.css'
 const ClubsContent = ({ clubsData, searchTerm, setSearchTerm }) => {
   const filteredClubs = clubsData.filter(c=>c.name.toLowerCase().includes(searchTerm.toLowerCase()));
   return (

@@ -1,54 +1,57 @@
-import React, { useEffect, useState, useRef } from 'react';
-import SockJS from 'sockjs-client';
-import { Client } from '@stomp/stompjs';
+import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { WSSContext } from '../App';
 
-const NOTIFICATIONS_URL = 'http://localhost:8082/ws-notifications';
 
-const NotificationsComponent = ({ userId, token }) => {
-  const [notifications, setNotifications] = useState([]);
+const NotificationsComponent = ({ userId, wsConnected }) => {
+  const { service: wss } = useContext(WSSContext);
   const navigate = useNavigate();
-  const stompRef = useRef(null);
+  const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
-    if (!token || !userId) return;
+    // тільки коли є юзер і WS підключений — створюємо підписки
+    if (!userId || !wsConnected) return;
 
-    const client = new Client({
-      webSocketFactory: () => new SockJS(NOTIFICATIONS_URL),
-      connectHeaders: { Authorization: `Bearer ${token}` },
-      reconnectDelay: 5000,
-      onConnect: () => {
-        client.subscribe(`/topic/notifications/${userId}`, ({ body }) => {
-          if (body) setNotifications(prev => [...prev, body]);
-        });
-        client.subscribe(`/topic/notifications/gameFound/${userId}`, ({ body }) => {
-          if (!body) return;
-          try {
-            const notif = JSON.parse(body);
-            const isWhite = String(notif.whitePlayerId) === String(userId);
-            const summary = `Нова гра ${notif.gameId}: ви ${isWhite?'білими':'чорними'}, режим ${notif.gameMode}, контроль ${notif.timeControl}`;
-            setNotifications(prev => [...prev, summary]);
-            navigate(`/game/${notif.gameId}`, { state: { color: isWhite?'w':'b' } });
-          } catch(e) {
-            console.error(e);
-          }
-        });
+    const unsub1 = wss.subscribe(
+      `/topic/notifications/${userId}`,
+      ({ message }) => setNotifications(prev => [...prev, message])
+    );
+
+    const unsub2 = wss.subscribe(
+      `/topic/notifications/gameFound/${userId}`,
+      notif => {
+        const isWhite = String(notif.whitePlayerId) === String(userId);
+        const summary = `Нова гра ${notif.gameId}: ви ${isWhite ? 'білими' : 'чорними'}`;
+        setNotifications(prev => [...prev, summary]);
+        navigate(`/game/${notif.gameId}`, { state: { color: isWhite ? 'w' : 'b' } });
       }
-    });
+    );
 
-    stompRef.current = client;
-    client.activate();
-    return () => stompRef.current?.deactivate();
-  }, [userId, token, navigate]);
+    return () => {
+      unsub1();
+      unsub2();
+    };
+  }, [userId, wsConnected, wss, navigate]);
 
   return (
+    /*
     <div className="notifications">
-      <h2>Уведомления</h2>
-      {notifications.length === 0
-        ? <p>Нет новых уведомлений</p>
-        : <ul>{notifications.map((n,i)=><li key={i}>{n}</li>)}</ul>
-      }
+      <h2>Сповіщення</h2>
+      {!wsConnected && (
+        <p className="warning">Очікую підключення до WebSocket...</p>
+      )}
+      {notifications.length === 0 ? (
+        <p>{wsConnected ? 'Немає нових сповіщень' : ''}</p>
+      ) : (
+        <ul>
+          {notifications.map((n, i) => (
+            <li key={i}>{typeof n === 'string' ? n : JSON.stringify(n)}</li>
+          ))}
+        </ul>
+      )}
     </div>
+    */
+    <></>
   );
 };
 

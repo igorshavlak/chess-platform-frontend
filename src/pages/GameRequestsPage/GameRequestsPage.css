@@ -1,0 +1,341 @@
+/* src/pages/GameRequestsPage/GameRequestsPage.css */
+
+/* Імпортуємо шрифт (приклад, можна замінити) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+.game-requests-page {
+  display: flex;
+  min-height: 100vh;
+  background-color: #2E2E2E;
+  color: #e0e0e0; /* Трохи світліший основний текст */
+  font-family: 'Inter', sans-serif; /* Застосовуємо імпортований шрифт */
+}
+
+.content-area {
+  flex-grow: 1;
+  padding: 2.5rem 3rem; /* Збільшили відступи */
+  margin-left: 220px;
+  overflow-y: auto;
+}
+
+.page-title {
+  font-size: 2rem; /* Збільшили заголовок */
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #444; /* Додали підкреслення */
+  padding-bottom: 0.8rem;
+}
+
+/* ----- Кнопки дій ----- */
+.action-buttons-main {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2.5rem; /* Збільшили відступ знизу */
+  flex-wrap: wrap;
+}
+
+/* Базові стилі кнопок */
+.action-button,
+.simul-button,
+.join-button {
+  padding: 0.75rem 1.5rem; /* Уніфікували падінги */
+  border: none;
+  border-radius: 8px; /* Більш сучасні заокруглення */
+  font-size: 0.95rem; /* Трохи змінили розмір шрифту */
+  font-weight: 600; /* Зробили жирнішим */
+  cursor: pointer;
+  transition: all 0.25s ease-out; /* Плавніший перехід */
+  display: inline-flex; /* Для вирівнювання іконки та тексту */
+  align-items: center;
+  gap: 0.6rem;
+  text-decoration: none; /* На випадок використання як посилання */
+  line-height: 1; /* Щоб текст не стрибав */
+}
+
+/* Основна кнопка (наприклад, Швидкий старт) */
+.action-button.primary {
+  background: linear-gradient(90deg, #5cb85c 0%, #4CAF50 100%); /* Градієнт */
+  color: white;
+  box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3); /* Тінь */
+}
+.action-button.primary:hover {
+  background: linear-gradient(90deg, #4CAF50 0%, #45a049 100%);
+  box-shadow: 0 6px 12px rgba(76, 175, 80, 0.4);
+  transform: translateY(-2px);
+}
+.action-button.primary:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 5px rgba(76, 175, 80, 0.3);
+}
+
+/* Вторинні кнопки (заповнені) */
+.action-button.secondary,
+.simul-button.secondary {
+  background-color: #4a4a4a; /* Темніший сірий */
+  color: #e0e0e0;
+  border: 1px solid #555; /* Додали ледь помітну рамку */
+}
+.action-button.secondary:hover,
+.simul-button.secondary:hover {
+  background-color: #555;
+  border-color: #666;
+  transform: translateY(-2px);
+}
+.action-button.secondary:active,
+.simul-button.secondary:active {
+   transform: translateY(0);
+   background-color: #404040;
+}
+
+/* Вторинні кнопки (контурні) */
+.action-button.secondary.outline {
+  background-color: transparent;
+  color: #b0b0b0; /* Світліший сірий для тексту */
+  border: 1px solid #555;
+}
+.action-button.secondary.outline:hover {
+  background-color: rgba(255, 255, 255, 0.05); /* Ледь помітний фон при наведенні */
+  border-color: #777;
+  color: #e0e0e0;
+  transform: translateY(-2px);
+}
+.action-button.secondary.outline:active {
+   transform: translateY(0);
+   background-color: rgba(255, 255, 255, 0.02);
+}
+
+/* Кнопка "Приєднатись" на картках */
+.join-button {
+  background-color: #4CAF50; /* Основний зелений */
+  color: white;
+  padding: 0.6rem 1.2rem; /* Трохи менша */
+  font-size: 0.9rem;
+  align-self: flex-end; /* Кнопка завжди праворуч внизу */
+  margin-top: auto; /* Притискає кнопку до низу картки */
+}
+.join-button:hover {
+  background-color: #45a049;
+   transform: scale(1.03); /* Ефект легкого збільшення */
+}
+
+.button-icon {
+  font-size: 1.1em;
+  margin-right: 0.1rem; /* Невеликий відступ праворуч від іконки */
+}
+
+/* ----- Таби ----- */
+.tabs-container {
+  display: flex;
+  justify-content: space-between; /* Розділяє таби та кнопку "Організувати" */
+  align-items: center;
+  margin-bottom: 2rem; /* Збільшили відступ */
+  border-bottom: 1px solid #444; /* Тонша лінія */
+  padding-bottom: 0.5rem; /* Відступ під лінію */
+  flex-wrap: wrap;
+}
+
+.tabs {
+  display: flex;
+  gap: 0.5rem; /* Відстань між табами */
+}
+
+.tab-button {
+  padding: 0.8rem 1.5rem;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: #aaa; /* Зробили неактивні таби сірішими */
+  cursor: pointer;
+  font-size: 1.05rem; /* Трохи збільшили шрифт табів */
+  font-weight: 500;
+  transition: color 0.3s ease, border-color 0.3s ease;
+  margin-bottom: -1px; /* Компенсує border-bottom контейнера */
+}
+
+.tab-button:hover {
+  color: #e0e0e0; /* Світліший при наведенні */
+}
+
+.tab-button.active {
+  color: #f0d9b5; /* Шаховий акцент для активного табу */
+  border-bottom-color: #f0d9b5;
+  font-weight: 600;
+}
+
+/* Розміщення кнопки "Організувати сеанс" */
+.simul-button {
+  /* Стилі вже задані вище (.secondary) */
+  margin-left: 1rem; /* Відступ від табів */
+}
+
+/* ----- Список та Картки ----- */
+.request-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Збільшили мінімальну ширину */
+  gap: 2rem; /* Збільшили відстань */
+}
+
+.request-card {
+  background: linear-gradient(145deg, #383838, #313131); /* Легкий градієнт фону */
+  padding: 1.5rem;
+  border-radius: 12px; /* Більші заокруглення */
+  box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3), /* Основна тінь */
+             -5px -5px 15px rgba(68, 68, 68, 0.1); /* Світла тінь зверху (неоморфізм-лайт) */
+  border: 1px solid #404040; /* Ледь помітна рамка */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.request-card:hover {
+  transform: translateY(-6px) scale(1.02); /* Більш виразний hover */
+  box-shadow: 8px 8px 20px rgba(0, 0, 0, 0.4),
+             -5px -5px 15px rgba(68, 68, 68, 0.1);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 1rem; /* Збільшили відступ */
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #4a4a4a; /* Світліший розділювач */
+}
+
+.card-nickname {
+  font-size: 1.4rem; /* Збільшили нікнейм */
+  font-weight: 600;
+  color: #f0d9b5; /* Шаховий акцент */
+  word-break: break-word;
+  line-height: 1.3;
+}
+
+.card-rating {
+  font-size: 1rem;
+  font-weight: 500; /* Зробили рейтинг трохи жирнішим */
+  color: #ababab;
+  white-space: nowrap;
+  margin-left: 0.5rem; /* Відступ від нікнейму */
+}
+
+.card-details {
+  font-size: 0.95rem;
+  color: #c5c5c5; /* Трохи світліший текст деталей */
+  margin-bottom: 1.5rem; /* Збільшили відступ */
+  flex-grow: 1;
+  line-height: 1.6; /* Покращили міжрядковий інтервал */
+}
+
+.card-details p {
+  margin: 0.5rem 0;
+  display: flex; /* Для вирівнювання іконки */
+  align-items: center;
+}
+
+.card-details strong {
+  color: #e0e0e0; /* Виділення жирного тексту */
+  margin-right: 0.5rem; /* Відступ після жирного тексту */
+  min-width: 70px; /* Мінімальна ширина для вирівнювання */
+  display: inline-block;
+}
+
+.details-icon {
+  margin-right: 0.5rem;
+  color: #ababab; /* Колір іконки в деталях */
+  font-size: 1em;
+}
+
+/* Повідомлення про відсутність запитів */
+.no-requests {
+  grid-column: 1 / -1; /* Займає всю ширину */
+  text-align: center;
+  padding: 3rem 1rem;
+  background-color: rgba(0, 0, 0, 0.1); /* Ледь помітний фон */
+  border-radius: 8px;
+  border: 1px dashed #555; /* Пунктирна рамка */
+}
+.no-requests p {
+  font-size: 1.1rem;
+  color: #aaa;
+  margin-bottom: 1.5rem;
+}
+/* Кнопки в блоці no-requests */
+.no-requests .action-button,
+.no-requests .simul-button {
+  margin: 0 auto; /* Центрування кнопки */
+}
+
+
+/* ----- Адаптивність ----- */
+
+@media (max-width: 1200px) {
+  .content-area {
+    margin-left: 0;
+    margin-top: 60px; /* Або висота вашого горизонтального сайдбару */
+    padding: 2rem;
+  }
+}
+
+@media (max-width: 992px) {
+  .request-list {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Зменшуємо мінімальну ширину на планшетах */
+    gap: 1.5rem;
+  }
+  .content-area {
+     padding: 1.5rem;
+  }
+  .page-title {
+     font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 768px) {
+   .tabs-container {
+     flex-direction: column; /* Таби і кнопка один під одним */
+     align-items: stretch; /* Розтягуємо на всю ширину */
+     gap: 1rem;
+     border-bottom: none; /* Прибираємо спільну лінію */
+   }
+   .tabs {
+     justify-content: center; /* Таби по центру */
+     border-bottom: 1px solid #444; /* Додаємо лінію тільки під таби */
+     padding-bottom: 1rem;
+     width: 100%;
+   }
+   .simul-button {
+      margin-left: 0;
+      align-self: center; /* Кнопка по центру */
+   }
+   .action-buttons-main {
+      justify-content: center;
+   }
+}
+
+@media (max-width: 480px) {
+   .content-area {
+      padding: 1rem;
+   }
+   .page-title {
+      font-size: 1.5rem;
+   }
+   .action-button, .simul-button {
+      width: 100%;
+      justify-content: center;
+   }
+   .request-list {
+      grid-template-columns: 1fr; /* Одна колонка */
+      gap: 1rem;
+   }
+   .request-card {
+      padding: 1.2rem;
+      border-radius: 10px;
+   }
+   .card-nickname {
+      font-size: 1.2rem;
+   }
+   .tab-button {
+      padding: 0.6rem 1rem;
+      font-size: 0.95rem;
+   }
+}

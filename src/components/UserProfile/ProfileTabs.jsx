@@ -1,6 +1,6 @@
 import React from 'react';
 import { FaChartLine, FaHistory, FaMedal, FaUserFriends, FaChessRook } from 'react-icons/fa';
-import '../../pages/UserProfilePage.css'
+import '../../pages/UserProfilePage/UserProfilePage.css'
 
 const tabs = [
   { key: 'stats', label: 'Статистика', icon: <FaChartLine /> },

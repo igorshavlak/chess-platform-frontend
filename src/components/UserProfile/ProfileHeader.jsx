@@ -1,9 +1,12 @@
+// src/components/UserProfile/ProfileHeader.jsx
 import React from 'react';
 import { FaCalendarAlt, FaUserFriends } from 'react-icons/fa';
-import '../../pages/UserProfilePage.css'
+import '../../pages/UserProfilePage/UserProfilePage.css';
 
 const ProfileHeader = ({ userData, isOwnProfile }) => {
+  if (!userData) return null;
   const { avatar, username, rating, memberSince, friends } = userData;
+
   return (
     <div className="profile-header">
       <div className="profile-avatar-section">
@@ -19,6 +22,7 @@ const ProfileHeader = ({ userData, isOwnProfile }) => {
           <span className="rating-label">ELO</span>
         </div>
       </div>
+
       <div className="profile-info">
         <h2 className="profile-username">{username}</h2>
         <div className="profile-meta">
@@ -31,6 +35,7 @@ const ProfileHeader = ({ userData, isOwnProfile }) => {
             <span>{friends} друзів</span>
           </div>
         </div>
+
         {isOwnProfile ? (
           <button className="edit-profile-btn">Редагувати профіль</button>
         ) : (
@@ -43,4 +48,5 @@ const ProfileHeader = ({ userData, isOwnProfile }) => {
     </div>
   );
 };
+
 export default ProfileHeader;

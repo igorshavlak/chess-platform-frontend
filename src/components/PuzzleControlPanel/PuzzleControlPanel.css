@@ -1,0 +1,373 @@
+/* Перенесено з ChessPuzzlePage.css */
+.chess-puzzle-info-panel {
+  background-color: #333;
+  border-radius: 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #e0e0e0;
+
+  /* Збільшення ширини - налаштуйте за потреби */
+  min-width: 350px; /* Приклад: збільшено від базових 250-300px */
+  width: 30%; /* Можливо, варто використовувати відсотки, якщо це сайдбар у гнучкому контейнері */
+  box-sizing: border-box; /* Врахувати padding в розмірі */
+}
+
+.puzzle-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 15px;
+  border-bottom: 2px solid #444;
+  padding-bottom: 20px;
+}
+
+.puzzle-header h2 {
+  color: #e0e0e0;
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.puzzle-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.player-rating {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  border-radius: 12px;
+  background-color: #3b506b;
+  font-size: 16px;
+  font-weight: 600;
+  width: 100%;
+}
+
+.trophy-icon {
+  color: #FFD700;
+  font-size: 18px;
+}
+
+.rating-value {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-weight: bold;
+  background-color: #5a5a5a;
+  color: #e0e0e0;
+}
+
+.rating-value.player {
+  background-color: #4a6da7;
+  transition: all 0.3s ease; /* Додаємо перехід для всіх властивостей */
+}
+.rating-value.player.increased {
+  color: green; /* Зелений колір, коли рейтинг збільшується */
+  transform: scale(1.1); /* Збільшуємо розмір числа */
+}
+
+.rating-value.player.decreased {
+  color: red; /* Червоний колір, коли рейтинг зменшується */
+  transform: scale(0.9); /* Зменшуємо розмір числа */
+}
+.puzzle-description {
+  color: #c0c0c0;
+  font-size: 16px;
+  line-height: 1.5;
+  padding: 15px;
+  background-color: #3a3a3a;
+  border-radius: 10px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.move-result {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 15px;
+  border-radius: 10px;
+  font-size: 15px;
+}
+
+.move-result.correct {
+  background-color: rgba(0, 128, 0, 0.3);
+  color: #7fdfa4;
+}
+
+.move-result.incorrect {
+  background-color: rgba(128, 0, 0, 0.3);
+  color: #ff9a9a;
+}
+
+.puzzle-hint {
+  background-color: rgba(49, 120, 198, 0.2);
+  color: #8ab4ff;
+  padding: 15px;
+  border-left: 5px solid #3178c6;
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+.puzzle-controls {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.move-navigation {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  background-color: #3a3a3a;
+  border-radius: 12px;
+  padding: 10px;
+}
+
+.nav-button {
+  background-color: #4a4a4a;
+  border: none;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease-in-out;
+  color: #e0e0e0;
+}
+
+.nav-button:hover:not(:disabled) {
+  background-color: #5a5a5a;
+  transform: translateY(-2px);
+}
+
+.nav-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hint-button,
+.next-puzzle-button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 15px;
+}
+
+.hint-button {
+  background-color: #2c6bc0;
+  color: #fff;
+}
+
+.hint-button:hover {
+  background-color: #1e5ebd;
+  transform: translateY(-2px);
+}
+
+.next-puzzle-button {
+  background-color: #3d9142;
+  color: #fff;
+}
+
+.next-puzzle-button:hover {
+  background-color: #328039;
+  transform: translateY(-2px);
+}
+
+/* Медіа-запити, що впливають на панель, також перенесіть */
+@media (max-width: 1200px) {
+  .chess-puzzle-info-panel {
+    /* Це клас батьківського контейнера, який тепер буде охоплювати PuzzleInfoPanel */
+    max-height: 35vh;
+    /* Можливо, потрібно буде адаптувати залежно від батьківського flex/grid */
+    overflow-y: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Стилі для панелі на малих екранах */
+}
+
+/* Додайте до існуючого PuzzleControlPanel.css */
+
+.puzzle-header h2 {
+  /* ... існуючі стилі ... */
+  text-align: center;
+  /* Можливо, вирівняти заголовок по центру */
+  width: 100%;
+}
+
+.streak-counter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  border-radius: 12px;
+  background-color: #722f37;
+  /* Темно-червоний або інший колір для стріку */
+  font-size: 16px;
+  font-weight: 600;
+  width: 100%;
+  justify-content: center;
+  /* Вирівняти по центру */
+}
+
+.streak-icon {
+  color: #ff4500;
+  /* Помаранчевий або червоний для іконки вогню */
+  font-size: 18px;
+}
+
+.rating-value.streak {
+  background-color: #a0522d;
+  /* Sienna або інший відповідний колір */
+  color: #fff;
+}
+
+/* Можливо, приховати опис в стріку або зменшити його */
+.chess-puzzle-info-panel .puzzle-description {
+  /* Додайте стиль, якщо хочете приховати в стрік режимі */
+}
+
+
+/* Стилі для повідомлень про завершення стріку */
+.streak-end-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  padding: 20px;
+  border-radius: 10px;
+  font-size: 18px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.streak-end-message.correct {
+  background-color: rgba(0, 128, 0, 0.3);
+  color: #7fdfa4;
+}
+
+.streak-end-message.incorrect {
+  background-color: rgba(128, 0, 0, 0.3);
+  color: #ff9a9a;
+}
+
+.streak-end-message svg {
+  /* Іконка в повідомленні */
+  font-size: 36px;
+}
+
+/* Стилі для початкового екрана стріку та екрана завершення */
+.content-wrapper.start-screen,
+.content-wrapper.streak-failed-screen,
+.content-wrapper.streak-complete-screen {
+  flex-grow: 1;
+  /* Займає доступний простір */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Вирівнювання по центру */
+  align-items: center;
+  text-align: center;
+  gap: 20px;
+  padding: 20px;
+  color: #e0e0e0;
+  /* Колір тексту */
+}
+
+.start-screen h2,
+.streak-failed-screen h2,
+.streak-complete-screen h2 {
+  color: #fff;
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.start-screen p,
+.streak-failed-screen p,
+.streak-complete-screen p {
+  font-size: 18px;
+  color: #c0c0c0;
+  max-width: 600px;
+  line-height: 1.5;
+}
+
+.streak-score {
+  font-size: 24px;
+  font-weight: bold;
+  color: #ffD700;
+  /* Золотистий колір для рахунку */
+}
+
+.start-streak-button,
+.start-standard-button {
+  padding: 15px 30px;
+  border: none;
+  border-radius: 12px;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 20px;
+}
+
+.start-streak-button {
+  background-color: #e06262;
+  /* Приємний червонуватий для старту стріку */
+  color: #fff;
+}
+
+.start-streak-button:hover {
+  background-color: #c05050;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+.start-standard-button {
+  background-color: #4a6da7;
+  /* Синій для звичайного режиму */
+  color: #fff;
+}
+
+.start-standard-button:hover {
+  background-color: #3b5b8a;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Додайте або змініть стилі для існуючих кнопок навігації та дій,
+  щоб вони відповідали новому дизайну та були неактивними, коли потрібно */
+
+.nav-button:disabled,
+.hint-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}

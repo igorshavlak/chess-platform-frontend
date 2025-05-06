@@ -1,6 +1,6 @@
 import React from 'react';
 import { FaTrophy } from 'react-icons/fa';
-import '../../pages/UserProfilePage.css'
+import '../../pages/UserProfilePage/UserProfilePage.css'
 
 const AchievementsContent = ({ achievements }) => (
   <div className="achievements-container">

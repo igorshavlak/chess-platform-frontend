@@ -8,7 +8,8 @@ import {
   FaCalendarDay,
   FaChartBar,
   FaArrowLeft,
-  FaInfoCircle
+  FaInfoCircle,
+  FaFire
 } from 'react-icons/fa';
 import Sidebar from '../components/Sidebar/Sidebar';
 import './TasksModesPage.css';
@@ -186,16 +187,24 @@ const TasksModesPage = () => {
       description: 'Щодня нова цікава задача. Не пропустіть жодного дня для підтримки вашої шахової форми.',
       icon: <FaCalendarDay />,
       color: '#ffa726'
+    },
+    {
+      id: 'puzzle-streak',
+      title: 'Puzzle streak',
+      description: 'Вирішуйте щораз важчі задачі та створюйте серію перемог. Обмеження часу немає, тому не поспішайте. Один хибний хід, і гра закінчена! Але ви можете пропустити один хід за сесію.',
+      icon: <FaFire />,
+      color: '#8e1df2'
     }
+    
   ];
   
   const handleModeSelect = (modeId) => {
     if (modeId === 'themes-openings') {
       setShowThemeSelector(true);
-    } else {
-      // Навігація до відповідної сторінки з задачами
-      navigate(`/tasks/${modeId}`);
-    }
+    }  else if (modeId === 'random' || modeId === 'puzzle-streak') { // <-- Додайте перевірку на ваші режими задач
+  
+      navigate(`/tasks/${modeId}`); // <-- Змінено шлях навігації
+    }
   };
   
   const handleThemeSelect = (themeId, type) => {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { FaHistory, FaCalendarAlt } from 'react-icons/fa';
-import '../../pages/UserProfilePage.css'
+import '../../pages/UserProfilePage/UserProfilePage.css'
 
 const GamesContent = ({ recentGames }) => (
   <div className="games-history">

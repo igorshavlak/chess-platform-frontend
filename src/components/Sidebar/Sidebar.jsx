@@ -71,7 +71,7 @@ function Sidebar() {
         </li>
         
         <li>
-          <NavLink to="/game" className="nav-link" onClick={() => setIsActive(false)}>
+          <NavLink to="/requests" className="nav-link" onClick={() => setIsActive(false)}>
             <FaChess className="icon" />
             <span>Гра</span>
           </NavLink>

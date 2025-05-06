@@ -1,0 +1,429 @@
+/* src/pages/SimulLobbyPage/SimulLobbyPage.css */
+/* Використовуємо змінні для кольорів для легшої зміни */
+:root {
+    --bg-color: #2E2E2E;
+    --surface-color: #3a3a3a;
+    --surface-lighter: #4a4a4a;
+    --border-color: #555;
+    --text-primary: #e0e0e0;
+    --text-secondary: #b0b0b0;
+    --text-muted: #888;
+    --accent-green: #4CAF50;
+    --accent-green-dark: #45a049;
+    --accent-red: #f44336;
+    --accent-red-dark: #d32f2f;
+    --accent-chess: #f0d9b5;
+    --font-family: 'Inter', sans-serif; /* Той самий шрифт */
+  }
+  
+  .simul-lobby-page {
+    display: flex;
+    min-height: 100vh;
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+  }
+  
+  .lobby-content-area {
+    flex-grow: 1;
+    padding: 2rem 2.5rem; /* Трохи змінені відступи */
+    margin-left: 220px; /* Відступ для сайдбару */
+    display: flex;
+    gap: 2rem; /* Відстань між основними секціями */
+    overflow: hidden; /* Запобігаємо зайвій прокрутці сторінки */
+  }
+  
+  /* Лівa/центральна секція (списки гравців) */
+  .player-lists-section {
+    flex: 3; /* Займає більше місця */
+    display: flex;
+    flex-direction: column;
+    min-width: 0; /* Важливо для flex-елементів */
+  }
+  
+  .section-title {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.8rem;
+  }
+  
+  .player-columns {
+    display: flex;
+    gap: 1.5rem;
+    flex-grow: 1; /* Розтягує колонки на доступну висоту */
+    min-height: 0; /* Важливо для flex-елементів */
+  }
+  
+  .player-column {
+    flex: 1;
+    background-color: var(--surface-color);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    padding: 1rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Ховаємо зайвий контент, додаємо прокрутку до списку */
+  }
+  
+  .player-column h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+  }
+  
+  .player-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    overflow-y: auto; /* Додаємо прокрутку тільки до списку */
+    flex-grow: 1; /* Список займає доступний простір */
+    /* Стилизация скроллбара (опционально) */
+    scrollbar-width: thin;
+    scrollbar-color: var(--surface-lighter) var(--surface-color);
+  }
+  .player-list::-webkit-scrollbar {
+    width: 6px;
+  }
+  .player-list::-webkit-scrollbar-track {
+    background: var(--surface-color);
+    border-radius: 3px;
+  }
+  .player-list::-webkit-scrollbar-thumb {
+    background-color: var(--surface-lighter);
+    border-radius: 3px;
+  }
+  
+  
+  .player-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.7rem 0.5rem; /* Внутрішні відступи елемента */
+    border-bottom: 1px solid var(--surface-lighter);
+    transition: background-color 0.2s ease;
+  }
+  .player-item:last-child {
+    border-bottom: none;
+  }
+  .player-item:hover {
+     background-color: rgba(255, 255, 255, 0.03); /* Ледь помітний hover */
+  }
+  
+  .player-info {
+    display: flex;
+    flex-direction: column; /* Нікнейм над рейтингом */
+    gap: 0.1rem;
+    overflow: hidden; /* Обрізка довгих нікнеймів */
+    margin-right: 0.5rem;
+  }
+  
+  .player-nickname {
+    font-weight: 500;
+    color: var(--accent-chess); /* Акцентний колір для нікнейму */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Додаємо три крапки для довгих нікнеймів */
+  }
+  
+  .player-rating {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
+  
+  .player-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .action-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0.4rem;
+    font-size: 1.1rem;
+    border-radius: 50%; /* Круглі кнопки */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    width: 30px; /* Фіксована ширина/висота */
+    height: 30px;
+  }
+  
+  .action-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .approve-btn {
+    color: var(--accent-green);
+  }
+  .approve-btn:hover {
+    background-color: rgba(76, 175, 80, 0.15);
+    color: var(--accent-green-dark);
+  }
+  
+  .remove-btn {
+    color: var(--accent-red);
+  }
+  .remove-btn:hover {
+    background-color: rgba(244, 67, 54, 0.15);
+    color: var(--accent-red-dark);
+  }
+  
+  .empty-list-msg {
+    color: var(--text-muted);
+    font-style: italic;
+    padding: 1rem;
+    text-align: center;
+  }
+  
+  /* Кнопка "Почати сеанс" */
+  .start-simul-button {
+    margin-top: 1.5rem; /* Відступ зверху */
+    padding: 0.8rem 2rem;
+    width: fit-content; /* Ширина за контентом */
+    align-self: center; /* Кнопка по центру секції */
+  }
+  
+  
+  /* Правa секція (інформація та чат) */
+  .info-chat-section {
+    flex: 2; /* Займає менше місця */
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem; /* Відстань між інфо-блоком та чатом */
+    min-width: 0; /* Важливо для flex-елементів */
+    max-width: 400px; /* Обмеження максимальної ширини */
+  }
+  
+  /* Блок інформації */
+  .session-info-box {
+    background-color: var(--surface-color);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    padding: 1.5rem;
+  }
+  
+  .session-info-box h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-primary);
+  }
+  
+  .info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem; /* Збільшили відступ біля іконки */
+    margin-bottom: 0.8rem;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+  }
+  .info-item:last-child {
+    margin-bottom: 0;
+  }
+  
+  .info-item strong {
+    color: var(--text-primary); /* Виділення мітки */
+    font-weight: 500;
+  }
+  
+  .info-icon {
+    font-size: 1.2rem;
+    color: var(--accent-chess); /* Акцентний колір іконок */
+    min-width: 20px; /* Щоб текст вирівнювався */
+    text-align: center;
+  }
+  
+  /* Блок чату */
+  .chat-box {
+    background-color: var(--surface-color);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    padding: 0; /* Забираємо падінг, додаємо його до внутрішніх елементів */
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* Чат займає решту місця у правій колонці */
+    min-height: 0; /* Важливо для flex-елементів */
+    overflow: hidden; /* Обрізка зовнішнього контейнера */
+  }
+  
+  .chat-box h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 1rem 1.5rem; /* Падінг тільки для заголовка */
+    margin: 0;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+  }
+  
+  .chat-messages {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 1rem 1.5rem; /* Падінг для зони повідомлень */
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    /* Стилизация скроллбара (опционально) */
+    scrollbar-width: thin;
+    scrollbar-color: var(--surface-lighter) var(--surface-color);
+  }
+  .chat-messages::-webkit-scrollbar {
+    width: 6px;
+  }
+  .chat-messages::-webkit-scrollbar-track {
+    background: var(--surface-color);
+    border-radius: 3px;
+  }
+  .chat-messages::-webkit-scrollbar-thumb {
+    background-color: var(--surface-lighter);
+    border-radius: 3px;
+  }
+  
+  .message {
+    max-width: 85%; /* Повідомлення не займають всю ширину */
+    padding: 0.6rem 1rem;
+    border-radius: 10px;
+    background-color: var(--surface-lighter);
+    align-self: flex-start; /* За замовчуванням зліва */
+    word-wrap: break-word; /* Перенос довгих слів */
+  }
+  
+  .message.my-message {
+    background-color: var(--accent-green); /* Ваші повідомлення іншим кольором */
+    color: white;
+    align-self: flex-end; /* Ваші повідомлення справа */
+  }
+  
+  .message-sender {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+    color: var(--accent-chess); /* Колір імені відправника */
+  }
+  
+  .message.my-message .message-sender {
+    color: rgba(255, 255, 255, 0.8); /* Інший колір для "Ви" */
+  }
+  
+  .message-text {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.4;
+  }
+  
+  /* Область вводу чату */
+  .chat-input-area {
+    display: flex;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--border-color);
+    background-color: var(--surface-color); /* Фон для поля вводу */
+  }
+  
+  .chat-input-area input {
+    flex-grow: 1;
+    padding: 0.7rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px 0 0 6px; /* Заокруглення тільки зліва */
+    background-color: var(--bg-color); /* Темніший фон для поля */
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    outline: none;
+  }
+  .chat-input-area input:focus {
+    border-color: var(--accent-green);
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+  }
+  
+  .send-button {
+    background-color: var(--accent-green);
+    color: white;
+    border: none;
+    padding: 0.7rem 1rem;
+    border-radius: 0 6px 6px 0; /* Заокруглення тільки справа */
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease;
+  }
+  .send-button:hover {
+    background-color: var(--accent-green-dark);
+  }
+  
+  /* --- Адаптивність --- */
+  
+  @media (max-width: 1200px) {
+    .lobby-content-area {
+      margin-left: 0;
+      margin-top: 60px; /* Висота горизонтального сайдбару */
+    }
+  }
+  
+  @media (max-width: 992px) {
+    .lobby-content-area {
+      flex-direction: column; /* Секції одна під одною */
+      overflow-y: auto; /* Додаємо прокрутку всій області */
+      overflow-x: hidden;
+      padding: 1.5rem;
+    }
+    .player-lists-section,
+    .info-chat-section {
+      flex: none; /* Забираємо flex-grow */
+      max-width: none; /* Знімаємо обмеження ширини правої колонки */
+    }
+    .player-columns {
+       min-height: 250px; /* Мінімальна висота колонок */
+    }
+    .chat-box {
+       min-height: 300px; /* Мінімальна висота чату */
+    }
+  }
+  
+  @media (max-width: 768px) {
+     .player-columns {
+        flex-direction: column; /* Колонки одна під одною */
+        gap: 1.5rem;
+     }
+     .player-column {
+        padding: 1rem;
+     }
+      .player-list {
+         max-height: 200px; /* Обмеження висоти списків на мобільних */
+      }
+     .section-title,
+     .session-info-box h3,
+     .chat-box h3 {
+        font-size: 1.3rem;
+     }
+     .lobby-content-area {
+        padding: 1rem;
+     }
+  }
+  
+  @media (max-width: 480px) {
+     .session-info-box, .player-column {
+        padding: 0.8rem;
+     }
+     .chat-input-area input {
+        padding: 0.6rem 0.8rem;
+     }
+      .send-button {
+        padding: 0.6rem 0.8rem;
+        font-size: 1rem;
+      }
+  }

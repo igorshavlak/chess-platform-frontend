@@ -1,6 +1,6 @@
 // Оновлений App.jsx з додаванням маршрутів для шахових задач
-import React from 'react';
-import { useKeycloak } from '@react-keycloak/web'; 
+import React, { useEffect, useState, createContext } from 'react';
+import { useKeycloak } from '@react-keycloak/web';
 import { Navigate } from 'react-router-dom';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage.jsx';
@@ -8,16 +8,18 @@ import ChessPageMock from './pages/ChessPage/ChessPageMock.jsx';
 import ChessPageContainer from './pages/ChessPage/ChessPageContainter.jsx';
 import StartPage from './pages/StartPage.jsx';
 import TasksModePage from './pages/TasksModesPage.jsx';
-import UserProfilePage from './pages/UserProfilePage.jsx';
+import UserProfilePage from './pages/UserProfilePage/UserProfilePage.jsx';
 import SocialPage from './pages/SocialPage.jsx';
 import AnalysisPage from './pages/AnalysisPage.jsx';
-import ChessPuzzlePage from './pages/ChessPuzzlePage.jsx'; // Додаємо новий компонент
-import NotificationComponent from './components/NotificationComponent.jsx'; 
+import ChessPuzzlePage from './pages/ChessPuzzlePage/ChessPuzzlePage.jsx'; // Додаємо новий компонент
+import NotificationComponent from './components/NotificationComponent.jsx';
 import ChatsPage from './pages/ChatsPage/ChatsPage.jsx';
+import GameRequestsPage from './pages/GameRequestsPage/GameRequestsPage.jsx';
+import websocketService from './components/websocketService.js';
 
-import './App.css'; 
+import './App.css';
 import './pages/ChessPage/ChessPage.css';
-import './pages/ChessPuzzlePage.css'; // Додаємо новий CSS
+import SimulLobbyPage from './pages/SimulLobbyPage.jsx';
 
 const PrivateRoute = ({ children }) => {
   const { keycloak } = useKeycloak();
@@ -29,47 +31,76 @@ const PrivateRoute = ({ children }) => {
   }
 };
 
+export const WSSContext = createContext({
+  service: null,
+  connected: false
+});
+
 function App() {
   const { keycloak } = useKeycloak();
-  const userId = keycloak?.tokenParsed?.sub; 
-  const useMock  = 'false';
+  const userId = keycloak?.tokenParsed?.sub;
+  const token = keycloak.token;
+  const useMock = 'false';
+  const WS_URL = 'http://localhost:8082/ws-notifications';
+  const [wsConnected, setWsConnected] = useState(false);
+
+  useEffect(() => {
+    if (token && userId) {
+      websocketService.connect({
+        url: WS_URL,
+        token,
+        onConnect: () => {
+          console.log('WS connected');
+          setWsConnected(true);
+        },
+        onError: err => console.error('WS Error', err),
+      });
+    }
+    return () => websocketService.disconnect();
+  }, [token, userId]);
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/tasks" element={<TasksModePage/>} />
-        <Route path="/chats" element={<ChatsPage/>} />
-        <Route path="/analysis" element={<AnalysisPage/>} />
-        <Route path="/social" element={<SocialPage />} />
-        <Route path="/" element={<HomePage />} />
-        <Route path="/game/:gameId" element={<ChessPageContainer />} />
-        
-        {/*<Route path="/game/:gameId" element={<ChessPageMock />} />*/}
-        {/* Маршрути для шахових задач */}
-        <Route path="/puzzle/:puzzleId/:mode" element={<ChessPuzzlePage />} />
-        <Route path="/puzzles/theme/:themeId" element={
-          <Navigate to={`/puzzle/theme1/theme`} replace />
-        } />
-        {/* Маршрути для профілю користувача */}
-        <Route path="/profile" element={
-          <PrivateRoute>
-            <UserProfilePage />
-          </PrivateRoute>
-        } />
-        <Route path="/profile/:userId" element={
-          <PrivateRoute>
-            <UserProfilePage />
-          </PrivateRoute>
-        } />
-        <Route path="/start" element={<StartPage />} />
-      </Routes>
-      {keycloak.authenticated && keycloak.token && (
-        <NotificationComponent 
-          userId={keycloak.tokenParsed?.sub} 
-          token={keycloak.token} 
-        />
-      )}
-    </Router>
+    <WSSContext.Provider value={{
+      service: websocketService,
+      connected: wsConnected
+    }}>
+      <Router>
+        <Routes>
+          <Route path="/requests" element={<GameRequestsPage />} />
+          <Route path="/simul/lobby" element={<SimulLobbyPage />} />
+          <Route path="/tasks" element={<TasksModePage />} />
+          <Route path="/chats" element={<ChatsPage />} />
+          <Route path="/analysis" element={<AnalysisPage />} />
+          <Route path="/social" element={<SocialPage />} />
+          <Route path="/" element={<HomePage />} />
+          <Route path="/game/:gameId" element={<ChessPageContainer />} />
+
+          {/*<Route path="/game/:gameId" element={<ChessPageMock />} />*/}
+          {/* Маршрути для шахових задач */}
+          <Route path="/tasks/:mode" element={<ChessPuzzlePage />} />
+
+          {/* Маршрути для профілю користувача */}
+          <Route path="/profile" element={
+            <PrivateRoute>
+              <UserProfilePage />
+            </PrivateRoute>
+          } />
+          <Route path="/profile/:userId" element={
+            <PrivateRoute>
+              <UserProfilePage />
+            </PrivateRoute>
+          } />
+          <Route path="/start" element={<StartPage />} />
+        </Routes>
+        {keycloak.authenticated && keycloak.token && (
+          <NotificationComponent
+            userId={keycloak.tokenParsed?.sub}
+            token={keycloak.token}
+            wsConnected={wsConnected} 
+          />
+        )}
+      </Router>
+    </WSSContext.Provider>
   );
 }
 

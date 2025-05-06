@@ -1,0 +1,219 @@
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    /* Темний напівпрозорий фон */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    /* Перекриває інший контент */
+}
+
+.modal-content {
+    background-color: #3b3b3b;
+    /* Темний фон модалки */
+    color: #e0e0e0;
+    /* Світлий текст */
+    padding: 2rem;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 500px;
+    /* Максимальна ширина */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    position: relative;
+    max-height: 90vh;
+    /* Обмеження висоти для невеликих екранів */
+    overflow-y: auto;
+    /* Прокрутка, якщо контент не вміщається */
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    color: #f0d9b5;
+    /* Акцентний колір */
+    font-size: 1.5rem;
+    border-bottom: 1px solid #555;
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+    /* Збільшений відступ між полями */
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.6rem;
+    /* Відступ між лейблом та полем */
+    font-weight: 600;
+    color: #c5c5c5;
+    /* Колір лейблу */
+    font-size: 0.95rem;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group input[type="datetime-local"],
+.form-group select {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 1px solid #555;
+    border-radius: 5px;
+    background-color: #4a4a4a;
+    /* Темніший фон поля */
+    color: #e0e0e0;
+    font-size: 1rem;
+    box-sizing: border-box;
+    /* Враховує padding в загальну ширину */
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="number"]:focus,
+.form-group input[type="datetime-local"]:focus,
+.form-group select:focus {
+    border-color: #f0d9b5;
+    box-shadow: 0 0 5px rgba(240, 217, 181, 0.5);
+    outline: none;
+}
+
+/* Стилі для select */
+.form-group select {
+    -webkit-appearance: none;
+    /* Прибираємо стандартну стрілочку */
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%23e0e0e0" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+    /* Власна стрілочка SVG */
+    background-repeat: no-repeat;
+    background-position: right 10px top 50%;
+    background-size: 18px auto;
+    padding-right: 30px;
+    /* Відступ для стрілочки */
+}
+
+/* Стилі для datetime-local */
+.form-group input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    /* Робить іконку білою */
+    opacity: 0.8;
+    cursor: pointer;
+}
+
+.form-group input[type="datetime-local"]::-webkit-inner-spin-button,
+.form-group input[type="datetime-local"]::-webkit-clear-button {
+    display: none;
+    /* Приховує кнопки збільшення/зменшення та очищення */
+}
+
+
+.modal-actions {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: flex-end;
+    /* Кнопки праворуч */
+    gap: 1rem;
+}
+
+/* Використовуємо вже існуючі стилі кнопок з GameRequestsPage.css */
+.button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease-out;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    text-decoration: none;
+    line-height: 1;
+}
+
+.button.primary {
+    background: linear-gradient(90deg, #5cb85c 0%, #4CAF50 100%);
+    color: white;
+    box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+}
+
+.button.primary:hover {
+    background: linear-gradient(90deg, #4CAF50 0%, #45a049 100%);
+    box-shadow: 0 6px 12px rgba(76, 175, 80, 0.4);
+    transform: translateY(-2px);
+}
+
+.button.primary:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(76, 175, 80, 0.3);
+}
+
+.button.secondary {
+    background-color: #4a4a4a;
+    color: #e0e0e0;
+    border: 1px solid #555;
+}
+
+.button.secondary:hover {
+    background-color: #555;
+    border-color: #666;
+    transform: translateY(-2px);
+}
+
+.button.secondary:active {
+    transform: translateY(0);
+    background-color: #404040;
+}
+
+.button.secondary.outline {
+    background-color: transparent;
+    color: #b0b0b0;
+    border: 1px solid #555;
+}
+
+.button.secondary.outline:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: #777;
+    color: #e0e0e0;
+}
+
+.button.secondary.outline:active {
+    background-color: rgba(255, 255, 255, 0.02);
+}
+
+
+/* Адаптивність для модалки */
+@media (max-width: 600px) {
+    .modal-content {
+        padding: 1.5rem;
+        width: 95%;
+    }
+
+    .modal-content h2 {
+        font-size: 1.3rem;
+    }
+
+    .form-group input[type="text"],
+    .form-group input[type="number"],
+    .form-group input[type="datetime-local"],
+    .form-group select {
+        padding: 0.6rem 0.8rem;
+        font-size: 0.9rem;
+    }
+
+    .modal-actions {
+        flex-direction: column-reverse;
+        /* Скасувати зверху, Створити знизу */
+        gap: 0.8rem;
+    }
+
+    .modal-actions .button {
+        width: 100%;
+        justify-content: center;
+    }
+}
