@@ -16,6 +16,9 @@ import NotificationComponent from './components/NotificationComponent.jsx';
 import ChatsPage from './pages/ChatsPage/ChatsPage.jsx';
 import GameRequestsPage from './pages/GameRequestsPage/GameRequestsPage.jsx';
 import websocketService from './components/websocketService.js';
+import ChessBotPageContainer from './pages/ChessPage/ChessBotPageContainer'; // Нова сторінка з ботом
+
+
 
 
 import './App.css';
@@ -86,6 +89,8 @@ function App() {
             </PrivateRoute>
             } /> {/* <-- Додано параметр */}
           <Route path="/tasks" element={<TasksModePage />} />
+          <Route path="/play/bot" element={<ChessBotPageContainer />} /> {/* Новий маршрут */}
+        
           <Route path="/chats" element={<ChatsPage />} />
           <Route path="/analysis" element={<AnalysisPage />} />
           <Route path="/social" element={<SocialPage />} />

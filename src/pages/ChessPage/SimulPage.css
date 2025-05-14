@@ -124,3 +124,58 @@
       padding: 0.8rem;
     }
   }
+  /* Existing styles remain unchanged, adding new styles below */
+
+/* Statistics Container */
+.simul-stats-container {
+  text-align: center;
+  padding: 1rem;
+  background-color: #2e2e2e;
+  margin: 1rem 0;
+  border-radius: 8px;
+  color: #e0e0e0;
+}
+
+.simul-stats-container h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.2rem;
+}
+
+.simul-stats-container p {
+  margin: 0.2rem 0;
+  font-size: 1rem;
+}
+
+.stats-win {
+  color: #28a745; /* Green for wins */
+}
+
+.stats-loss {
+  color: #dc3545; /* Red for losses */
+}
+
+.stats-draw {
+  color: #ffc107; /* Yellow for draws */
+}
+
+/* Outcome Highlights for Mini-Boards */
+.mini-board-wrapper.outcome-win {
+  border-color: #28a745; /* Green border for wins */
+  background-color: rgba(40, 167, 69, 0.1); /* Light green background */
+}
+
+.mini-board-wrapper.outcome-loss {
+  border-color: #dc3545; /* Red border for losses */
+  background-color: rgba(220, 53, 69, 0.1); /* Light red background */
+}
+
+.mini-board-wrapper.outcome-draw {
+  border-color: #ffc107; /* Yellow border for draws */
+  background-color: rgba(255, 193, 7, 0.1); /* Light yellow background */
+}
+
+/* Ensure active class has higher specificity if needed */
+.mini-board-wrapper.active {
+  border-color: #007bff !important;
+  box-shadow: 0 0 15px rgba(0, 123, 255, 0.7) !important;
+}

@@ -1,140 +1,292 @@
-/* Оновлені стилі для AnalysisPage.css */
 
-body {
-  background-color: #282c34; /* Темний фон для всієї сторінки */
-  color: #abb2bf; /* Світлий текст */
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-.analysis-page-container {
+/* Загальний контейнер */
+.app-container {
   display: flex;
-  /* Адаптація відступу з урахуванням сайдбару */
-  padding-left: 220px; /* Ширина вашого фіксованого сайдбару */
-  min-height: 100vh; /* Мінімальна висота - весь екран */
-  box-sizing: border-box;
-
-  @media (max-width: 1200px) {
-      padding-left: 0;
-      padding-top: 60px; /* Висота верхнього сайдбару */
-  }
-   @media (max-width: 768px) {
-      padding-top: 60px; /* Переконайтесь, що є відступ, якщо сайдбар зверху */
-  }
+  height: 100vh;
+  overflow: hidden;
 }
 
-.analysis-content {
-  flex-grow: 1;
-  display: flex;
-  padding: 1.5rem; /* Збільшуємо внутрішні відступи */
-  gap: 2rem; /* Збільшуємо простір між блоками */
-  flex-direction: row; /* Дошка зліва, інфо справа на широких екранах */
-  max-width: 1600px; /* Обмежуємо максимальну ширину контенту */
-  margin: 0 auto; /* Центруємо контент */
-  width: 100%; /* Займає всю доступну ширину в межах max-width */
-  box-sizing: border-box;
-
-
-  @media (max-width: 1024px) {
-      flex-direction: column; /* На середніх екранах: дошка зверху, інфо знизу */
-      padding: 1rem;
-      gap: 1.5rem;
-  }
-
-  @media (max-width: 768px) {
-      padding: 0.8rem;
-      gap: 1rem;
-  }
-}
-
-.analysis-board-area {
-  flex: 2; /* Дошка займає більше місця */
+/* Основна сторінка аналізу */
+.analysis-page {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center; /* Центруємо вертикально */
-  min-width: 300px; /* Мінімальна ширина для дошки */
-  max-width: 100%; /* Дошка не перевищує ширину контейнера */
-
-  /* На мобільних дошка займатиме 100% ширини свого контейнера flex-direction: column */
-  @media (max-width: 1024px) {
-     flex: none; /* Вимикаємо flex-grow на мобільних */
-     width: 100%; /* Дозволяємо займати всю ширину */
-     align-items: stretch; /* Розтягуємо дошку по ширині контейнера */
-  }
+  flex: 1;
+  height: 100vh;
+  background-color: #1e1e1e;
+  color: #fff;
+  font-family: 'Roboto', 'Segoe UI', sans-serif;
+  overflow: hidden;
 }
 
-/* Стилі для обгортки дошки з ChessboardComponent */
-.board-wrapper {
-  width: 100%; /* Дошка займе 100% ширини батьківського елемента (analysis-board-area) */
-  max-width: 80vh; /* Обмеження максимального розміру дошки від висоти вьюпорта */
-  margin-bottom: 1rem; /* Простір між дошкою та контролами */
-
-   @media (max-width: 1024px) {
-       max-width: 95vw; /* На мобільних обмеження від ширини вьюпорта */
-       margin: 0 auto 1rem auto; /* Центруємо дошку на середніх екранах */
-   }
-}
-
-
-.board-controls {
+/* Основний контент */
+.main-content {
   display: flex;
+  flex-direction: row !important;
+  flex: 1;
+  height: 100%;
+  padding: 1rem;
+  gap: 1.5rem;
+  overflow: hidden;
+}
+
+/* Секція з дошкою та смугою оцінки */
+.board-section {
+  display: flex;
+  flex-direction: row;
+  flex: 3;
   gap: 1rem;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Контейнер для шахової дошки */
+.chessboard-container {
+  width: calc(100vh - 10rem);
+  height: calc(100vh - 10rem);
+  min-width: 500px;
+  min-height: 500px;
+  max-width: 90%;
+  max-height: 90vh;
+  background-color: #333;
+  border-radius: 6px;
+  position: relative;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Бейдж якості ходу */
+.move-quality-badge {
+  position: absolute;
+  bottom: 15px;
+  left: 55px;
+  background-color: #444;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 0.8rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+/* Кольори для різних оцінок */
+.brilliant {
+  background-color: #1976d2;
+  color: #fff;
+}
+.excellent {
+  background-color: #2e7d32;
+  color: #fff;
+}
+.good {
+  background-color: #388e3c;
+  color: #fff;
+}
+.neutral {
+  background-color: #757575;
+  color: #fff;
+}
+.inaccuracy {
+  background-color: #ffa000;
+  color: #1e1e1e;
+}
+.mistake {
+  background-color: #f57c00;
+  color: #1e1e1e;
+}
+.blunder {
+  background-color: #d32f2f;
+  color: #fff;
+}
+
+/* Панель ходів */
+.moves-section {
+  display: flex;
+  flex-direction: column;
+  width: 340px;
+  min-width: 300px;
+  height: 100%;
+  background-color: #2e2e2e;
+  border-radius: 6px;
+  padding: 1rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+/* Кнопки навігації */
+.navigation-buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.navigation-buttons button {
+  flex: 1;
+  background-color: #444;
+  color: #eee;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 0;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.navigation-buttons button:hover:not(:disabled) {
+  background-color: #555;
+  transform: translateY(-1px);
+}
+
+.navigation-buttons button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Контейнер з історією ходів */
+.move-history {
+  flex: 1;
+  overflow-y: auto;
+  background-color: #222;
+  border-radius: 6px;
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+/* Таблиця історії ходів */
+.move-history-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.move-history-table th,
+.move-history-table td {
+  border-bottom: 1px solid #333;
+  padding: 0.5rem;
+  text-align: center;
+  color: #eee;
+  vertical-align: middle;
+}
+
+.move-history-table th {
+  background-color: #333;
+  font-weight: 600;
+}
+
+/* Номер ходу */
+.move-number {
+  width: 2rem;
+  color: #bbb;
+  font-weight: 500;
+}
+
+/* Клітинки ходів */
+.move-cell {
+  background-color: #333;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+  border-radius: 4px;
+}
+
+.move-cell:hover {
+  background-color: #444;
+  transform: translateY(-1px);
+}
+
+/* Підсвічування поточного ходу */
+.current-move-cell {
+  background-color: #4caf50 !important;
+  color: #fff !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Клітинка з оцінкою */
+.move-eval-cell {
+  color: #eee;
+  min-width: 3rem;
+}
+
+/* Інформаційний блок аналізу */
+.analysis-info {
+  padding: 0.75rem;
+  background-color: #333;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  max-height: 180px;
+  overflow-y: auto;
   margin-top: 0.5rem;
 }
 
-.board-controls button {
-  background-color: #4a515c; /* Темніша кнопка */
-  color: #abb2bf;
-  border: none;
-  padding: 0.6rem 1.2rem;
+.analysis-info p {
+  margin: 0.4rem 0;
+}
+
+.quality-text {
+  display: inline-block;
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+/* Додаткові стилі для блоку ефемерного аналізу (варіанту) */
+.ephemeral-analysis {
+  margin-top: 0.5rem;
+  background-color: #444;
   border-radius: 6px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.3s ease, transform 0.1s ease;
-
-  &:hover {
-      background-color: #5a6371;
-  }
-   &:active {
-      transform: scale(0.98);
-  }
+  padding: 0.75rem;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: #eee;
 }
 
-
-.analysis-info-area {
-  flex: 1; /* Інфо займає менше місця */
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  min-width: 250px; /* Мінімальна ширина для панелей */
-  overflow-y: auto; /* Прокрутка, якщо вміст завеликий */
-  background-color: #2e323a; /* Трохи світліший темний фон */
-  padding: 1.2rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Легка тінь */
-
-  @media (max-width: 1024px) {
-      min-width: auto; /* Знімаємо мінімальну ширину на мобільних */
-      width: 100%; /* Займає всю ширину */
-      order: 1; /* Інфо блок йде після дошки на мобільних */
+@media (max-width: 1200px) {
+  .main-content {
+    flex-direction: row !important;
+    gap: 1rem;
+  }
+  .board-section {
+    flex: 3;
+    margin-bottom: 0;
+  }
+  .moves-section {
+    width: 340px;
+    min-width: 300px;
+    max-width: 340px;
+    height: auto;
+    max-height: none;
   }
 }
 
-
-/* Прибираємо стилі для analysis-input-area, оскільки поля вводу прибрані */
-/*
-.analysis-input-area {
-  display: flex;
-  gap: 0.5rem;
+@media (max-width: 768px) {
+  .main-content {
+    flex-direction: column !important;
+  }
+  .chessboard-container {
+    max-height: 60vh;
+  }
+  .moves-section {
+    width: 100%;
+    max-width: 100%;
+  }
+  .analysis-type-buttons,
+  .analysis-buttons {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
 }
-*/
 
-/* Додаткові глобальні стилі для темної теми та форм */
-button, input, textarea {
-  font-family: inherit; /* Успадковуємо шрифт */
+@media (max-width: 480px) {
+  .main-content {
+    padding: 0.5rem;
+  }
+  .move-history {
+    padding: 0.5rem;
+  }
+  .navigation-buttons button {
+    padding: 0.4rem 0;
+  }
 }

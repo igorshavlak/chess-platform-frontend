@@ -52,11 +52,17 @@ export default function SimulPageContainer() {
   const [capturedByBlack, setCapturedByBlack] = useState([]);
   // const [players, setPlayers] = useState(null); // <--- ВИДАЛЕНО, оскільки це надлишковий стан
 
+  const [now, setNow] = useState(Date.now());
+
   const timerRefs = useRef({});
   const [stompClient, setStompClient] = useState(null);
   const [autoSwitchEnabled, setAutoSwitchEnabled] = useState(false);
   const autoSwitchIntervalRef = useRef(null);
   const autoSwitchIndexRef = useRef(0);
+
+  const [stats, setStats] = useState({ wins: 0, losses: 0, draws: 0 });
+const [showModal, setShowModal] = useState(false);
+const [modalContent, setModalContent] = useState({ title: '', message: '', outcome: '' });
 
   const startAutoSwitchRef = useRef(null);
 
@@ -79,6 +85,8 @@ export default function SimulPageContainer() {
       .then(simulGamesResponse => {
         console.log('Отримані дані ігор:', simulGamesResponse);
         const initialSimulGames = simulGamesResponse.map(gameData => {
+
+          
           const chessInstance = new Chess();
           gameData.moves.forEach(m => chessInstance.move(m));
 
@@ -103,6 +111,8 @@ export default function SimulPageContainer() {
             lastMove: gameData.moves.length > 0
               ? chessInstance.history({ verbose: true }).slice(-1)[0]
               : null,
+            whiteDeadline: gameData.whiteDeadline,
+            blackDeadline: gameData.blackDeadline,
             whiteTime: Math.ceil(gameData.whiteTimeMillis / 1000),
             blackTime: Math.ceil(gameData.blackTimeMillis / 1000),
             increment: Math.ceil(gameData.incrementMillis / 1000) || 0,
@@ -134,41 +144,49 @@ export default function SimulPageContainer() {
           console.log('activeSimulGameId встановлено на:', initialSimulGames[0].gameId); // <-- ДОДАЙТЕ ЦЕЙ ЛОГ
           setActiveSimulGameId(initialSimulGames[0].gameId);
         }
-
         initialSimulGames.forEach(game => {
+          // 1) Зупиняємо попередній таймер для цієї гри (якщо був)
           clearInterval(timerRefs.current[game.gameId]);
+        
+          // 2) Запускаємо новий інтервал, який що 100 мс перераховує час за дедлайном
           timerRefs.current[game.gameId] = setInterval(() => {
-            setSimulGamesData(prevGames => {
-              const updatedGames = prevGames.map(g => {
-                if (g.gameId === game.gameId && g.gameStatus === 'Гра йде') {
-                  let newWhiteTime = g.whiteTime;
-                  let newBlackTime = g.blackTime;
-
-                  if (g.currentPlayer === 'w') {
-                    newWhiteTime = Math.max(newWhiteTime - 1, 0);
-                  } else {
-                    newBlackTime = Math.max(newBlackTime - 1, 0);
-                  }
-                  if (newWhiteTime === 0 || newBlackTime === 0) {
-                    clearInterval(timerRefs.current[g.gameId]);
-                    return { ...g, whiteTime: newWhiteTime, blackTime: newBlackTime, gameStatus: 'Час вийшов' };
-                  }
-                  return { ...g, whiteTime: newWhiteTime, blackTime: newBlackTime };
+            // *** ОГОЛОШУЄМО ЗМІННУ now ТУТ, у середині setInterval! ***
+            const now = Date.now();
+        
+            setSimulGamesData(prevGames =>
+              prevGames.map(g => {
+                // Якщо це не наша гра або вже не в статусі "Гра йде" — лишаємо як є
+                if (g.gameId !== game.gameId || g.gameStatus !== 'Гра йде') {
+                  return g;
                 }
-                return g;
-              });
-              return updatedGames;
-            });
-          }, 1000);
+        
+                // Рахуємо залишок секунд до дедлайну
+                const whiteSec = Math.max(0, Math.ceil((g.whiteDeadline - now) / 1000));
+                const blackSec = Math.max(0, Math.ceil((g.blackDeadline - now) / 1000));
+        
+                // Якщо час вийшов — міняємо статус
+                const status = (whiteSec === 0 || blackSec === 0)
+                  ? 'Час вийшов'
+                  : g.gameStatus;
+        
+                return {
+                  ...g,
+                  whiteTime: whiteSec,
+                  blackTime: blackSec,
+                  gameStatus: status,
+                };
+              })
+            );
+          }, 100);
         });
+        
+        
       })
       .catch(error => {
         console.error('Помилка при отриманні ігор:', error);
       });
 
-    return () => {
-      Object.values(timerRefs.current).forEach(clearInterval);
-    };
+      return () => Object.values(timerRefs.current).forEach(clearInterval);
   }, [token, meId, simulSessionId, updateGameData]);
 
 
@@ -209,6 +227,7 @@ export default function SimulPageContainer() {
         simulGamesData.forEach(game => { // Перемістити підписки сюди, щоб вони виконувались після отримання даних
           client.subscribe(`/topic/game/${game.gameId}`, ({ body }) => {
             const rsp = JSON.parse(body);
+            const now = Date.now();
             const targetGameId = rsp.gameId;
 
             setSimulGamesData(prevGames => {
@@ -242,8 +261,10 @@ export default function SimulPageContainer() {
                     fen: newFen,
                     moves: currentMoves,
                     lastMove: rsp.move ? { from: rsp.move.substring(0, 2), to: rsp.move.substring(2, 4) } : currentLastMove,
-                    whiteTime: Math.ceil(rsp.whiteTimeMillis / 1000),
-                    blackTime: Math.ceil(rsp.blackTimeMillis / 1000),
+                    whiteDeadline: rsp.whiteDeadline,
+                    blackDeadline: rsp.blackDeadline,
+                    whiteTime: Math.max(0, Math.ceil((rsp.whiteDeadline - now) / 1000)),
+                    blackTime: Math.max(0, Math.ceil((rsp.blackDeadline - now) / 1000)),
                     currentPlayer: newCurrentPlayer,
                     capturedByWhite: newCapturedByWhite,
                     capturedByBlack: newCapturedByBlack,
@@ -254,6 +275,58 @@ export default function SimulPageContainer() {
               });
             });
           });
+
+
+
+          client.subscribe(`/topic/game/${game.gameId}/conclude`, ({ body }) => {
+            const concl = JSON.parse(body);
+            let newGameStatus = 'Гра завершена';
+            let outcome = '';
+  
+            // Determine outcome and update statistics
+            if (concl.isWhiteWinner !== undefined) {
+              const isPlayerWhite = game.localColor === 'w';
+              if (concl.isWhiteWinner && isPlayerWhite) {
+                newGameStatus = 'Ви виграли!';
+                outcome = 'win';
+                setStats(prev => ({ ...prev, wins: prev.wins + 1 }));
+              } else if (concl.isWhiteWinner && !isPlayerWhite) {
+                newGameStatus = 'Ви програли.';
+                outcome = 'loss';
+                setStats(prev => ({ ...prev, losses: prev.losses + 1 }));
+              } else if (!concl.isWhiteWinner && isPlayerWhite) {
+                newGameStatus = 'Ви програли.';
+                outcome = 'loss';
+                setStats(prev => ({ ...prev, losses: prev.losses + 1 }));
+              } else if (!concl.isWhiteWinner && !isPlayerWhite) {
+                newGameStatus = 'Ви виграли!';
+                outcome = 'win';
+                setStats(prev => ({ ...prev, wins: prev.wins + 1 }));
+              }
+            } else {
+              newGameStatus = 'Нічия';
+              outcome = 'draw';
+              setStats(prev => ({ ...prev, draws: prev.draws + 1 }));
+            }
+  
+            // Update game data with outcome
+            updateGameData(game.gameId, { gameStatus: newGameStatus, outcome });
+  
+            // Show modal with conclusion details
+            setModalContent({
+              title: newGameStatus,
+              message: `Гра ${game.gameId} завершена. Результат: ${newGameStatus}`,
+              outcome,
+            });
+            setShowModal(true);
+  
+            // Clear game timer
+            clearInterval(timerRefs.current[game.gameId]);
+          });
+
+
+
+
 
           client.subscribe(`/topic/game/${game.gameId}/conclude`, ({ body }) => {
             const concl = JSON.parse(body);
@@ -275,6 +348,9 @@ export default function SimulPageContainer() {
     };
   }, [token, meId, simulGamesData, updateGameData]); // Додано simulGamesData в залежності
 
+  const handleCloseModal = useCallback(() => {
+    setShowModal(false);
+  }, []);
 
   const handleMove = useCallback((from, to) => {
     console.log('Спроба ходу:', { from, to }); // Додати цей лог
@@ -395,6 +471,9 @@ export default function SimulPageContainer() {
   }, [activeSimulGameId, simulGamesData, updateGameData]);
 
   const handleRestart = useCallback(() => {
+
+
+     const now = Date.now();    // <-- оголосили тут!
     const activeGame = simulGamesData.find(game => game.gameId === activeSimulGameId);
     if (!activeSimulGameId || !activeGame || activeGame.gameStatus !== 'Гра йде') return;
 
@@ -405,8 +484,11 @@ export default function SimulPageContainer() {
       fen: 'start',
       moves: [],
       lastMove: null,
-      whiteTime: Math.ceil(activeGame.initialWhiteTimeMillis / 1000), // Припускаємо, що початковий час зберігається
-      blackTime: Math.ceil(activeGame.initialBlackTimeMillis / 1000),
+      whiteDeadline: activeGame.whiteDeadline,
+      blackDeadline: activeGame.blackDeadline,
+           // рахуємо залишок через дедлайн
+           whiteTime:  Math.max(0, Math.ceil((activeGame.whiteDeadline - now) / 1000)),
+           blackTime:  Math.max(0, Math.ceil((activeGame.blackDeadline - now) / 1000)),
       gameStatus: 'Гра йде',
       currentPlayer: 'w',
       capturedByWhite: [],
@@ -478,7 +560,7 @@ export default function SimulPageContainer() {
       onPieceDrop={handleMove}
       customSquareStyles={customSquareStyles}
       boardOrientation={activeGame.localColor === 'w' ? 'white' : 'black'}
-      players={activeGame.players} // `players` береться з `activeGame.players`
+      players={activeGame.players} 
       localColor={activeGame.localColor}
       whiteTime={activeGame.whiteTime}
       blackTime={activeGame.blackTime}
@@ -500,6 +582,11 @@ export default function SimulPageContainer() {
       onMiniBoardClick={handleMiniBoardClick}
       autoSwitchEnabled={autoSwitchEnabled}
       onAutoSwitchToggle={handleAutoSwitchToggle}
+
+      stats={stats} // Pass statistics
+    showModal={showModal} // Pass modal state
+    modalContent={modalContent} // Pass modal content
+    onCloseModal={handleCloseModal} // Pass modal close handler
     />
   );
 }

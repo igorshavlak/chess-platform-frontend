@@ -1,14 +1,15 @@
-
 import React from 'react';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import InfoPanel from '../../components/InfoPanel/InfoPanel';
 import ChessboardComponent from '../../components/ChessboardComponent/ChessboardComponent';
 import RightInfoPanel from '../../components/InfoPanel/RightInfoPanel';
-import './ChessPage.css'; // Використання існуючих стилів для основної структури
-import './SimulPage.css'; // Нові стилі для елементів симуляції
+import Modal from './Modal';
+import clsx from 'clsx';
+
+import './ChessPage.css';
+import './SimulPage.css';
 
 const SimulPageUI = ({
-  // Пропси для головної дошки (активної гри)
   fen,
   onPieceDrop,
   customSquareStyles,
@@ -29,18 +30,20 @@ const SimulPageUI = ({
   onMoveBackward,
   onMoveForward,
   onRestart,
-
-  // Нові пропси для симуляції
-  simulGames, // Масив об'єктів, кожен представляє міні-гру зі своїм fen, id тощо.
-  activeSimulGameId, // ID поточної активної гри
-  onMiniBoardClick, // Коллбек при натисканні на міні-дошку
-  autoSwitchEnabled, // Булеве значення для автоперемикання
-  onAutoSwitchToggle, // Коллбек для перемикання автоперемикання
+  simulGames,
+  activeSimulGameId,
+  onMiniBoardClick,
+  autoSwitchEnabled,
+  onAutoSwitchToggle,
+  stats, // { wins, losses, draws }
+  showModal, // Boolean to show modal
+  modalContent, // { title, message, outcome }
+  onCloseModal, // Callback to close modal
 }) => (
-  <div className="chess-page simul-page"> {/* Додаємо клас simul-page для специфічних стилів */}
+  <div className="chess-page simul-page">
     <Sidebar />
     <div className="chess-game-container">
-      {/* Ліва панель */}
+      {/* Left Panel */}
       <div className="left-panel-wrapper">
         <InfoPanel
           players={players}
@@ -56,17 +59,22 @@ const SimulPageUI = ({
         />
       </div>
 
-      {/* Основна дошка */}
+      {/* Main Board */}
       <div className="board-wrapper">
         <ChessboardComponent
           fen={fen}
           onPieceDrop={onPieceDrop}
           customSquareStyles={customSquareStyles}
           boardOrientation={boardOrientation}
+          isDraggablePiece={({ piece }) => {
+            if (gameStatus !== 'Гра йде') return false;
+            const pieceColor = piece.startsWith('w') ? 'w' : 'b';
+            return currentPlayer === localColor && pieceColor === localColor;
+          }}
         />
       </div>
 
-      {/* Права панель */}
+      {/* Right Panel */}
       <div className="right-panel-wrapper">
         <RightInfoPanel
           moves={moves}
@@ -75,11 +83,20 @@ const SimulPageUI = ({
           onMoveBackward={onMoveBackward}
           onMoveForward={onMoveForward}
           onRestart={onRestart}
+          gameStatus={gameStatus}
         />
       </div>
     </div>
 
-    {/* Міні-дошки та перемикач автоперемикання */}
+    {/* Statistics Display */}
+    <div className="simul-stats-container">
+      <h3>Статистика сеансу:</h3>
+      <p className="stats-win">Перемоги: {stats.wins}</p>
+      <p className="stats-loss">Поразки: {stats.losses}</p>
+      <p className="stats-draw">Нічиї: {stats.draws}</p>
+    </div>
+
+    {/* Auto-Switch Controls */}
     <div className="simul-controls">
       <div className="auto-switch-toggle">
         <label htmlFor="auto-switch">Автоперемикання дошок:</label>
@@ -92,30 +109,42 @@ const SimulPageUI = ({
       </div>
     </div>
 
+    {/* Mini-Boards */}
     <div className="mini-boards-container">
       {simulGames.map((gameData) => (
         <div
           key={gameData.gameId}
-          className={`mini-board-wrapper ${gameData.gameId === activeSimulGameId ? 'active' : ''}`}
+          className={clsx('mini-board-wrapper', {
+            active: gameData.gameId === activeSimulGameId,
+            'outcome-win': gameData.outcome === 'win',
+            'outcome-loss': gameData.outcome === 'loss',
+            'outcome-draw': gameData.outcome === 'draw',
+          })}
           onClick={() => onMiniBoardClick(gameData.gameId)}
         >
           <ChessboardComponent
             fen={gameData.fen}
             boardOrientation={gameData.localColor === 'w' ? 'white' : 'black'}
-            draggable={false} // Міні-дошки тільки для відображення, без взаємодії
+            isDraggablePiece={() => false} // Disable dragging on mini-boards
             className="mini-chessboard"
           />
           <div className="mini-board-info">
-              <p>Гра ID: {gameData.gameId}</p>
-              <p>Гравці: {gameData.players?.white?.name} vs {gameData.players?.black?.name}</p>
-              <p>Хід: {gameData.currentPlayer === 'w' ? 'Білі' : 'Чорні'}</p>
-              {gameData.whiteTime != null && gameData.blackTime != null && (
-                <p>Час: {Math.floor(gameData.whiteTime / 60).toString().padStart(2, '0')}:{(gameData.whiteTime % 60).toString().padStart(2, '0')} | {Math.floor(gameData.blackTime / 60).toString().padStart(2, '0')}:{(gameData.blackTime % 60).toString().padStart(2, '0')}</p>
-              )}
+            <p>{gameData.players.white.name} vs {gameData.players.black.name}</p>
+            <p>Статус: {gameData.gameStatus}</p>
           </div>
         </div>
       ))}
     </div>
+
+    {/* Modal for Game Conclusion */}
+    {showModal && (
+      <Modal
+        title={modalContent.title}
+        message={modalContent.message}
+        outcome={modalContent.outcome}
+        onClose={onCloseModal}
+      />
+    )}
   </div>
 );
 
