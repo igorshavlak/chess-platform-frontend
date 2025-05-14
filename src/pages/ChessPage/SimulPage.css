@@ -1,0 +1,126 @@
+/* src/pages/SimulChessPage/SimulChessPage.css */
+
+/* Стилі для елементів, специфічних для симуляції */
+
+.simul-page {
+    /* Додайте нижній відступ для розміщення міні-дошок */
+    padding-bottom: 20px;
+  }
+  
+  .simul-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    background-color: #3a3a3a; /* Темніший фон для елементів управління */
+    margin-top: 1rem; /* Відступ зверху від міні-дошок */
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  }
+  
+  .auto-switch-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #e0e0e0; /* Світлий колір тексту */
+    font-size: 1.1rem;
+  }
+  
+  .auto-switch-toggle label {
+    cursor: pointer;
+  }
+  
+  .auto-switch-toggle input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+  }
+  
+  
+  .mini-boards-container {
+    display: flex;
+    flex-wrap: wrap; /* Дозволяє дошкам переноситися на наступний рядок */
+    justify-content: center;
+    gap: 20px; /* Відстань між міні-дошками */
+    padding: 1.5rem;
+    background-color: #2e2e2e; /* Відповідає фону сторінки */
+    margin-top: 1.5rem;
+  }
+  
+  .mini-board-wrapper {
+    width: calc(25% - 15px); /* Максимум 4 в рядку, враховуючи відступ */
+    aspect-ratio: 1 / 1; /* Зберігає квадратне співвідношення сторін для дошки */
+    background-color: #3a3a3a; /* Трохи інший фон для кожної обгортки */
+    border-radius: 8px;
+    overflow: hidden; /* Приховує переповнення для заокруглених кутів */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, border 0.2s ease-in-out;
+    border: 2px solid transparent; /* Стандартна рамка */
+  
+    display: flex; /* Для центрування вмісту */
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between; /* Відступ між дошкою та інформацією */
+    padding-bottom: 10px; /* Відступ для інформації */
+  }
+  
+  .mini-board-wrapper:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6);
+  }
+  
+  .mini-board-wrapper.active {
+    border-color: #007bff; /* Виділення активної дошки */
+    box-shadow: 0 0 15px rgba(0, 123, 255, 0.7); /* Ефект світіння */
+  }
+  
+  .mini-chessboard {
+    width: 90%; /* Зменшує розмір шахової дошки в її обгортці */
+    height: auto; /* Автоматична висота для збереження співвідношення сторін */
+    margin: 10px auto 0; /* Центрує дошку, додає верхній відступ */
+  }
+  
+  .mini-board-info {
+    color: #c0c0c0; /* Світло-сірий колір тексту */
+    font-size: 0.85rem;
+    text-align: center;
+    width: 100%;
+    padding: 0 10px; /* Горизонтальний відступ */
+    box-sizing: border-box;
+  }
+  
+  .mini-board-info p {
+      margin: 5px 0;
+  }
+  
+  /* Адаптивні налаштування для міні-дошок */
+  @media (max-width: 1600px) {
+    .mini-board-wrapper {
+      width: calc(33.33% - 13.33px); /* 3 в рядку */
+    }
+  }
+  
+  @media (max-width: 1200px) {
+    .mini-board-wrapper {
+      width: calc(50% - 10px); /* 2 в рядку */
+    }
+    .mini-boards-container {
+      padding: 1rem;
+      gap: 15px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .mini-board-wrapper {
+      width: 90%; /* 1 в рядку, ширше */
+    }
+    .mini-boards-container {
+      padding: 0.5rem;
+      gap: 10px;
+    }
+    .auto-switch-toggle {
+      font-size: 1rem;
+      padding: 0.8rem;
+    }
+  }

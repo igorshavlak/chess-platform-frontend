@@ -57,3 +57,15 @@ export async function removeFriend(userId, friendId) {
   if (USE_MOCK) return Promise.resolve();
   return fetch(`${API_BASE}/api/friends/delete/${userId}/${friendId}`, { method: 'DELETE', headers: authHeader() });
 }
+export async function searchUsers(nickname, requesterId) {
+  if (USE_MOCK) {
+    // приклад мок-даних
+    return Promise.resolve([
+      { id: 'u10', username: nickname + '123', rating: 1500, online: false, lastSeen: '1 годину тому', avatar: null }
+    ]);
+  }
+  const res = await fetch(`${API_BASE}/api/users/search?nickname=${encodeURIComponent(nickname)}&requesterId=${requesterId}`, {
+    headers: { 'Content-Type': 'application/json', ...authHeader() }
+  });
+  return res.json();
+}

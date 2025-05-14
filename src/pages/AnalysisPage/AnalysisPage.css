@@ -1,0 +1,140 @@
+/* Оновлені стилі для AnalysisPage.css */
+
+body {
+  background-color: #282c34; /* Темний фон для всієї сторінки */
+  color: #abb2bf; /* Світлий текст */
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.analysis-page-container {
+  display: flex;
+  /* Адаптація відступу з урахуванням сайдбару */
+  padding-left: 220px; /* Ширина вашого фіксованого сайдбару */
+  min-height: 100vh; /* Мінімальна висота - весь екран */
+  box-sizing: border-box;
+
+  @media (max-width: 1200px) {
+      padding-left: 0;
+      padding-top: 60px; /* Висота верхнього сайдбару */
+  }
+   @media (max-width: 768px) {
+      padding-top: 60px; /* Переконайтесь, що є відступ, якщо сайдбар зверху */
+  }
+}
+
+.analysis-content {
+  flex-grow: 1;
+  display: flex;
+  padding: 1.5rem; /* Збільшуємо внутрішні відступи */
+  gap: 2rem; /* Збільшуємо простір між блоками */
+  flex-direction: row; /* Дошка зліва, інфо справа на широких екранах */
+  max-width: 1600px; /* Обмежуємо максимальну ширину контенту */
+  margin: 0 auto; /* Центруємо контент */
+  width: 100%; /* Займає всю доступну ширину в межах max-width */
+  box-sizing: border-box;
+
+
+  @media (max-width: 1024px) {
+      flex-direction: column; /* На середніх екранах: дошка зверху, інфо знизу */
+      padding: 1rem;
+      gap: 1.5rem;
+  }
+
+  @media (max-width: 768px) {
+      padding: 0.8rem;
+      gap: 1rem;
+  }
+}
+
+.analysis-board-area {
+  flex: 2; /* Дошка займає більше місця */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* Центруємо вертикально */
+  min-width: 300px; /* Мінімальна ширина для дошки */
+  max-width: 100%; /* Дошка не перевищує ширину контейнера */
+
+  /* На мобільних дошка займатиме 100% ширини свого контейнера flex-direction: column */
+  @media (max-width: 1024px) {
+     flex: none; /* Вимикаємо flex-grow на мобільних */
+     width: 100%; /* Дозволяємо займати всю ширину */
+     align-items: stretch; /* Розтягуємо дошку по ширині контейнера */
+  }
+}
+
+/* Стилі для обгортки дошки з ChessboardComponent */
+.board-wrapper {
+  width: 100%; /* Дошка займе 100% ширини батьківського елемента (analysis-board-area) */
+  max-width: 80vh; /* Обмеження максимального розміру дошки від висоти вьюпорта */
+  margin-bottom: 1rem; /* Простір між дошкою та контролами */
+
+   @media (max-width: 1024px) {
+       max-width: 95vw; /* На мобільних обмеження від ширини вьюпорта */
+       margin: 0 auto 1rem auto; /* Центруємо дошку на середніх екранах */
+   }
+}
+
+
+.board-controls {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.board-controls button {
+  background-color: #4a515c; /* Темніша кнопка */
+  color: #abb2bf;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+
+  &:hover {
+      background-color: #5a6371;
+  }
+   &:active {
+      transform: scale(0.98);
+  }
+}
+
+
+.analysis-info-area {
+  flex: 1; /* Інфо займає менше місця */
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 250px; /* Мінімальна ширина для панелей */
+  overflow-y: auto; /* Прокрутка, якщо вміст завеликий */
+  background-color: #2e323a; /* Трохи світліший темний фон */
+  padding: 1.2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Легка тінь */
+
+  @media (max-width: 1024px) {
+      min-width: auto; /* Знімаємо мінімальну ширину на мобільних */
+      width: 100%; /* Займає всю ширину */
+      order: 1; /* Інфо блок йде після дошки на мобільних */
+  }
+}
+
+
+/* Прибираємо стилі для analysis-input-area, оскільки поля вводу прибрані */
+/*
+.analysis-input-area {
+  display: flex;
+  gap: 0.5rem;
+}
+*/
+
+/* Додаткові глобальні стилі для темної теми та форм */
+button, input, textarea {
+  font-family: inherit; /* Успадковуємо шрифт */
+}

@@ -1,0 +1,108 @@
+/* Оновлені стилі для NotationComponent.css */
+
+.notation-container {
+    /* border: 1px solid #ccc; */ /* Прибираємо стандартний бордер */
+    padding: 0.8rem; /* Зменшуємо внутрішній відступ */
+    border-radius: 6px; /* Зменшуємо радіус бордера */
+    background-color: #39404a; /* Темніший фон для компонента */
+    color: #abb2bf; /* Колір тексту */
+    height: 300px; /* Можна залишити фіксовану висоту або зробити max-height */
+    max-height: 40vh; /* Або обмежити по висоті вьюпорта */
+    display: flex;
+    flex-direction: column;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2); /* Внутрішня тінь */
+  }
+  
+  .notation-container h3 {
+    margin-top: 0;
+    margin-bottom: 0.7rem; /* Збільшуємо відступ після заголовка */
+    color: #61afef; /* Яскравіший колір для заголовка */
+    font-size: 1.2rem;
+    border-bottom: 1px solid #4a515c; /* Лінія під заголовком */
+    padding-bottom: 0.5rem;
+  }
+  
+  .moves-list {
+    overflow-y: auto;
+    flex-grow: 1;
+    padding-right: 0.5rem;
+     /* Стилі для скролбару */
+     scrollbar-width: thin;
+     scrollbar-color: #4a515c #39404a;
+  }
+  
+  .moves-list::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .moves-list::-webkit-scrollbar-track {
+    background: #39404a;
+    border-radius: 4px;
+  }
+  
+  .moves-list::-webkit-scrollbar-thumb {
+    background-color: #4a515c;
+    border-radius: 4px;
+  }
+  
+  
+  .move-pair {
+    margin-bottom: 0.4rem; /* Збільшуємо відступ між парами ходів */
+    display: flex;
+    gap: 0.8rem; /* Збільшуємо простір між елементами в парі */
+    font-size: 1.1rem; /* Збільшуємо розмір шрифту */
+  }
+  
+  .move-number {
+    font-weight: bold;
+    margin-right: 0.25rem;
+    color: #528bff; /* Колір для номера ходу */
+    flex-shrink: 0; /* Забороняємо стискатись */
+    width: 2em; /* Фіксована ширина для номера ходу */
+  }
+  
+  .move-white, .move-black {
+    cursor: pointer;
+    padding: 0.2rem 0.4rem; /* Збільшуємо padding */
+    border-radius: 4px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    flex-grow: 1; /* Дозволяємо займати доступний простір */
+    text-align: center; /* Центруємо текст */
+  }
+  
+  .move-white:hover, .move-black:hover {
+    background-color: #4a515c; /* Фон при наведенні */
+    color: #ffffff; /* Білий текст при наведенні */
+  }
+  
+  .active-move {
+    background-color: #61afef; /* Яскравіший колір для активного ходу */
+    color: #282c34; /* Темний текст на активному ході */
+    font-weight: bold;
+  }
+  
+  .navigation-buttons {
+      margin-top: 1.2rem; /* Збільшуємо відступ зверху */
+      display: flex;
+      justify-content: center;
+      gap: 0.8rem; /* Збільшуємо простір між кнопками */
+  }
+  
+  .navigation-buttons button {
+      background-color: #4a515c;
+      color: #abb2bf;
+      border: none; /* Прибираємо бордер */
+      padding: 0.6rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background-color 0.3s ease, transform 0.1s ease;
+  
+       &:hover {
+          background-color: #5a6371;
+          color: #ffffff;
+      }
+      &:active {
+          transform: scale(0.98);
+      }
+  }

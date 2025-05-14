@@ -9,6 +9,9 @@ import GamesContent from '../../components/UserProfile/GamesContent';
 import AchievementsContent from '../../components/UserProfile/AchievementsContent';
 import FriendsContent from '../../components/UserProfile/FriendsContent';
 import ClubsContent from '../../components/UserProfile/ClubsContent';
+
+
+
 import * as friendService from './friendService';
 import './UserProfilePage.css';
 
@@ -23,6 +26,8 @@ export default function UserProfilePage() {
   const [clubsData, setClubsData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [friendsFilter, setFriendsFilter] = useState('all');
+  const [searchNickname, setSearchNickname] = useState('');
+const [searchResults, setSearchResults] = useState([]);
 
   const currentUser = keycloak.tokenParsed && {
     id: keycloak.tokenParsed.sub,
@@ -106,6 +111,8 @@ export default function UserProfilePage() {
     }
   }, [keycloak.authenticated, profileUserId, isOwnProfile]);
 
+
+
   if (loading) {
     return (
       <div className="page-container">
@@ -137,6 +144,12 @@ export default function UserProfilePage() {
     );
   }
 
+  const handleSearchUsers = () => {
+    if (!searchNickname.trim()) return;
+    friendService.searchUsers(searchNickname.trim(), currentUser.id)
+      .then(data => setSearchResults(data));
+  };
+
   const handleAccept = id => {
     friendService.acceptRequest(id).then(() =>
       setFriendRequests(reqs => reqs.filter(r => r.id !== id))
@@ -148,6 +161,7 @@ export default function UserProfilePage() {
     );
   };
   const handleAddFriend = id => {
+    console.log(id)
     friendService.sendRequest(currentUser.id, id);
   };
   const handleRemoveFriend = id => {
@@ -176,6 +190,12 @@ export default function UserProfilePage() {
                 setSearchTerm={setSearchTerm}
                 friendsFilter={friendsFilter}
                 setFriendsFilter={setFriendsFilter}
+
+                searchNickname={searchNickname}
+                setSearchNickname={setSearchNickname}
+                searchResults={searchResults}
+                onSearchUsers={handleSearchUsers}
+
                 onAcceptRequest={handleAccept}
                 onRejectRequest={handleReject}
                 onAddFriend={handleAddFriend}

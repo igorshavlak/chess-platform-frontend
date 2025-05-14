@@ -1,0 +1,54 @@
+/* Оновлені стилі для AnalysisPanelComponent.css */
+
+.analysis-panel {
+    /* border: 1px solid #ccc; */ /* Прибираємо стандартний бордер */
+    padding: 1rem; /* Збільшуємо padding */
+    border-radius: 6px;
+    background-color: #39404a; /* Темніший фон */
+    color: #abb2bf; /* Світлий текст */
+     box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2); /* Внутрішня тінь */
+  }
+  
+  .analysis-panel h3 {
+    margin-top: 0;
+    margin-bottom: 0.8rem; /* Збільшуємо відступ */
+    color: #61afef; /* Яскравіший колір для заголовка */
+    font-size: 1.2rem;
+    border-bottom: 1px solid #4a515c; /* Лінія під заголовком */
+    padding-bottom: 0.5rem;
+  }
+  
+  .evaluation {
+    font-size: 1.1rem;
+    margin-bottom: 0.6rem; /* Збільшуємо відступ */
+    font-weight: bold;
+    color: #c678dd; /* Колір для оцінки */
+  }
+  
+  .principal-variation {
+    font-style: italic;
+    color: #7f848e; /* Більш приглушений колір для PV */
+    word-break: break-all;
+    white-space: pre-wrap; /* Зберігаємо форматування пробілів, якщо потрібно */
+  }
+  
+  .thinking-indicator {
+     font-style: italic;
+     color: #98c379; /* Зеленуватий колір */
+     font-weight: normal;
+  }
+  
+  .analysis-panel.error {
+     color: #e06c75; /* Червонуватий колір для помилок */
+     font-weight: bold;
+     background-color: #4a3035; /* Фон для помилки */
+     border: 1px solid #e06c75;
+     padding: 1rem;
+     border-radius: 6px;
+  }
+  
+  /* Можна додати стилі для смуги оцінки (не реалізовано в JS) */
+  /*
+  .evaluation-bar-container { ... }
+  .evaluation-bar { ... }
+  */

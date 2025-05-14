@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react'; // Додайте useEffect, якщо потрібно завантаження даних тут
 import { useParams } from 'react-router-dom'; // Для читання параметра з URL
 import Sidebar from '../../components/Sidebar/Sidebar';
-import StandardPuzzleMode from '../StandardPuzzleMode'; // Імпортуємо компонент стандартного режиму
+import StandardPuzzleMode from './StandardPuzzleMode'; // Імпортуємо компонент стандартного режиму
 import PuzzleStreakMode from './PuzzleStreakMode'; // Імпортуємо компонент стрік режиму
 
 import './ChessPuzzlePage.css'; // Залиште стилі для загального макету сторінки

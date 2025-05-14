@@ -1,5 +1,5 @@
 // src/hooks/useSimulLobbyApi.js
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, useCallback } from 'react';
 import { useKeycloak } from '@react-keycloak/web';
 import { WSSContext } from '../../App';
 
@@ -89,6 +89,35 @@ function useSimulLobbyApi() {
     },  [websocketService, initialized, keycloak.authenticated, wsConnected]);
 
 
+
+
+    const joinSimul = useCallback(async (lobbyId) => {
+        const playerId = keycloak.tokenParsed?.sub;
+        if (!playerId) throw new Error("User ID not available");
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/lobby/${lobbyId}/join?playerId=${playerId}`, {
+                method: 'POST',
+                body: null
+            });
+
+            if (!response.ok) {
+                const errorBody = await response.text();
+                console.error(`Error joining simul: ${response.status}`, errorBody);
+                throw new Error(`Помилка приєднання до сеансу: ${response.status} ${errorBody}`);
+            }
+
+            console.log(`Successfully joined simul lobby ${lobbyId}`);
+            return { success: true };
+        } catch (err) {
+            console.error('Failed to join simul:', err);
+            throw err;
+        }
+    }, [keycloak]);
+
+
+
+
     // --- Create Simul Function ---
     // Ця функція буде викликатися з компонента GameRequestsPage
     const createSimul = async (simulDataFromModal) => {
@@ -174,7 +203,8 @@ function useSimulLobbyApi() {
         simulSessions,
         loading,
         error,
-        createSimul, // Повертаємо функцію для створення сеансу
+        createSimul,
+        joinSimul // Повертаємо функцію для створення сеансу
         // Можливо, знадобляться інші функції, наприклад, для приєднання до сеансу
         // joinSimul: async (simulId) => { ... }
     };

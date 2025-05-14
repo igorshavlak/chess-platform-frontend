@@ -1,5 +1,6 @@
 // src/pages/GameRequestsPage.jsx
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import CreateSimulModal from '../../components/CreateSimulModal/CreateSimulModal';
 import { FaPlus, FaBolt, FaUserFriends, FaRobot, FaPencilAlt, FaSignInAlt, FaUsers } from 'react-icons/fa';
@@ -30,8 +31,9 @@ const mapGameModeToUkrainian = (gameMode) => {
 };
 
 function GameRequestsPage() {
+    const navigate = useNavigate();
     // Використовуємо наш хук для отримання даних, стану завантаження та функції API
-    const { simulSessions, loading, error, createSimul } = useSimulLobbyApi();
+    const { simulSessions, loading, error, createSimul, joinSimul } = useSimulLobbyApi();
 
     const [activeTab, setActiveTab] = useState('lobby'); // 'lobby' або 'simul'
     const [isSimulModalOpen, setIsSimulModalOpen] = useState(false); // Стан для модалки
@@ -53,6 +55,15 @@ function GameRequestsPage() {
         }
     };
 
+    const handleJoinSimul = async (lobbyId) => {
+        try {
+            await joinSimul(lobbyId);
+            navigate(`/simul/lobby/${lobbyId}`); // Перенаправлення на сторінку лобі
+        } catch (err) {
+            console.error("Error joining simul:", err);
+            alert(`Помилка приєднання до сеансу: ${err.message}`);
+        }
+    };
 
     // --- Render Functions (Updated) ---
     // Note: Lobby rendering still uses mock data structure as its API wasn't provided
@@ -76,12 +87,15 @@ function GameRequestsPage() {
         // Use SimulSessionDTO properties
         const playerCount = session.joinedPlayerIds ? session.joinedPlayerIds.length : 0;
         const gameModeUkrainian = mapGameModeToUkrainian(session.gameMode); // Map game mode
+        const { nickname: masterNickname, rating: masterRating } = session.masterInfo ?? {};
 
         return (
             <div key={session.simulId} className="request-card simul-card">
                 <div className="card-header">
                     {/* Use masterNickname and masterRating from DTO */}
-                    <span className="card-nickname">{session.masterNickname} ({session.masterRating})</span>
+                   <span className="card-nickname">
+                  {masterNickname} ({masterRating})
+                </span>
                 </div>
                 <div className="card-details">
                     {/* Use timeControl and mapped gameMode */}
@@ -95,9 +109,12 @@ function GameRequestsPage() {
                     {session.startTime && <p><strong>Старт:</strong> {new Date(session.startTime).toLocaleString()}</p>}
                      {/* TODO: Відобразити maxOpponents */}
                 </div>
-                <button className="join-button">
-                    <FaSignInAlt /> До сеансу {/* TODO: Implement join logic using a function from the hook */}
-                </button>
+             <button
+                    className="join-button"
+                    onClick={() => handleJoinSimul(session.simulId)}
+                >
+                    <FaSignInAlt /> До сеансу
+                </button>
             </div>
         );
     };

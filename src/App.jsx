@@ -10,25 +10,38 @@ import StartPage from './pages/StartPage.jsx';
 import TasksModePage from './pages/TasksModesPage.jsx';
 import UserProfilePage from './pages/UserProfilePage/UserProfilePage.jsx';
 import SocialPage from './pages/SocialPage.jsx';
-import AnalysisPage from './pages/AnalysisPage.jsx';
+import AnalysisPage from './pages/AnalysisPage/AnalysisPage.jsx';
 import ChessPuzzlePage from './pages/ChessPuzzlePage/ChessPuzzlePage.jsx'; // Додаємо новий компонент
 import NotificationComponent from './components/NotificationComponent.jsx';
 import ChatsPage from './pages/ChatsPage/ChatsPage.jsx';
 import GameRequestsPage from './pages/GameRequestsPage/GameRequestsPage.jsx';
 import websocketService from './components/websocketService.js';
 
+
 import './App.css';
 import './pages/ChessPage/ChessPage.css';
-import SimulLobbyPage from './pages/SimulLobbyPage.jsx';
+import SimulLobbyPage from './pages/SimulLobbyPage/SimulLobbyPage.jsx';
+import SimulPageContainer from './pages/ChessPage/SimulPageContainer.jsx'
+import SimulPageMock from './pages/ChessPage/SimulPageMock.jsx'
 
 const PrivateRoute = ({ children }) => {
-  const { keycloak } = useKeycloak();
+  const { keycloak, initialized } = useKeycloak(); // <--- Отримуємо також 'initialized'
 
-  if (keycloak.authenticated) {
-    return children;
-  } else {
-    return <Navigate to="/" replace />;
+  // 1. Якщо Keycloak ще не ініціалізований, показуємо завантажувач або null.
+  // Це запобігає передчасному перенаправленню.
+  if (!initialized) {
+    return <div>Завантаження аутентифікації...</div>;
   }
+
+  // 2. Keycloak ініціалізований. Тепер перевіряємо статус аутентифікації.
+  if (initialized && !keycloak.authenticated) {
+    // Якщо не аутентифікований, перенаправляємо на сторінку входу.
+    // Переконайтеся, що '/login' - це ваш реальний шлях до сторінки входу.
+    return <Navigate to="/login" />;
+  }
+
+  // 3. Якщо Keycloak ініціалізований та користувач аутентифікований, відображаємо дочірні компоненти.
+  return children;
 };
 
 export const WSSContext = createContext({
@@ -67,17 +80,28 @@ function App() {
       <Router>
         <Routes>
           <Route path="/requests" element={<GameRequestsPage />} />
-          <Route path="/simul/lobby" element={<SimulLobbyPage />} />
+          <Route path="/simul/lobby/:lobbyId" element={
+            <PrivateRoute>
+            <SimulLobbyPage />
+            </PrivateRoute>
+            } /> {/* <-- Додано параметр */}
           <Route path="/tasks" element={<TasksModePage />} />
           <Route path="/chats" element={<ChatsPage />} />
           <Route path="/analysis" element={<AnalysisPage />} />
           <Route path="/social" element={<SocialPage />} />
           <Route path="/" element={<HomePage />} />
           <Route path="/game/:gameId" element={<ChessPageContainer />} />
+          <Route path="/simul/mock" element={<SimulPageMock />} />
 
           {/*<Route path="/game/:gameId" element={<ChessPageMock />} />*/}
           {/* Маршрути для шахових задач */}
           <Route path="/tasks/:mode" element={<ChessPuzzlePage />} />
+
+          <Route path="/simul/:simulSessionId/simulPage" element={
+            <PrivateRoute>
+              <SimulPageContainer />
+            </PrivateRoute>
+          } />
 
           {/* Маршрути для профілю користувача */}
           <Route path="/profile" element={
