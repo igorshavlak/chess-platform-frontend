@@ -34,11 +34,11 @@ export default function FriendsContent({
   onRemoveFriend,
 }) {
   const filteredFriends = friendsData.filter(f => {
-    const matchSearch = f.username.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchSearch = f.friendProfile.username.toLowerCase().includes(searchTerm.toLowerCase());
     const matchFilter =
       friendsFilter === 'all' ||
-      (friendsFilter === 'online' && f.online) ||
-      (friendsFilter === 'offline' && !f.online);
+      (friendsFilter === 'online' && f.friendProfile.online) ||
+      (friendsFilter === 'offline' && !f.friendProfile.online);
     return matchSearch && matchFilter;
   });
 
@@ -70,16 +70,17 @@ export default function FriendsContent({
             <div className="friends-list">
               {friendRequests.length > 0 ? (
                 friendRequests.map(r => (
+
                   <div key={r.id} className="friend-card">
                     <div className="friend-avatar">
                       {r.avatar ? (
-                        <img src={r.avatar} alt={r.username} />
+                        <img src={r.profileDTO.avatar} alt={r.profileDTO.username} />
                       ) : (
-                        <div className="default-avatar small">{r.username.charAt(0)}</div>
+                        <div className="default-avatar small">{}</div>
                       )}
                     </div>
                     <div className="friend-info">
-                      <div className="friend-name">{r.username}</div>
+                      <div className="friend-name">{r.profileDTO.username}</div>
                     </div>
                     <div className="friend-actions">
                       <button className="friend-action-icon" title="Прийняти" onClick={() => onAcceptRequest(r.id)}>
@@ -136,7 +137,7 @@ export default function FriendsContent({
                     </div>
                     <div className="friend-info">
                       <div className="friend-name">{user.username}</div>
-                       <div className="friend-rating">Рейтинг: {user.rating || '-'}</div> {/* Assuming search results include rating */}
+          
                        {/* Optional: Display last seen/online status if available in search results */}
                         <div className="friend-last-seen">
                          {user.online ? 'Онлайн' : (user.lastSeen ? `Був(ла): ${user.lastSeen}` : '')}
@@ -219,14 +220,13 @@ export default function FriendsContent({
               <div className={`friend-status-indicator ${f.online ? 'online' : 'offline'}`} />
               <div className="friend-avatar">
                 {f.avatar ? (
-                  <img src={f.avatar} alt={f.username} />
+                  <img src={f.avatar} alt={f.friendProfile.username} />
                 ) : (
-                  <div className="default-avatar small">{f.username.charAt(0)}</div>
+                  <div className="default-avatar small">{f.friendProfile.username.charAt(0)}</div>
                 )}
               </div>
               <div className="friend-info">
-                <div className="friend-name">{f.username}</div>
-                <div className="friend-rating">Рейтинг: {f.rating}</div>
+                <div className="friend-name">{f.friendProfile.username}</div>
                 <div className="friend-last-seen">
                   {f.online ? 'Онлайн' : `Був(ла): ${f.lastSeen}`}
                 </div>
