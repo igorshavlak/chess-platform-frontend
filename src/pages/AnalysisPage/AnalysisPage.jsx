@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Chess } from 'chess.js';
+import { useLocation } from 'react-router-dom';
 import ControlPanel from '../../components/AnalysisControlPanel/AnalysisControlPanel';
 import EvalBar from '../../components/EvalBar/EvalBar';
 import ChessboardComponent from '../../components/ChessboardComponent/ChessboardComponent';
@@ -9,6 +10,7 @@ import './AnalysisPage.css';
 const STOCKFISH_JS = 'https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js';
 
 function AnalysisPage() {
+  const { state } = useLocation();
   // ============================
   // 1) Основна логіка
   // ============================
@@ -41,6 +43,7 @@ function AnalysisPage() {
   // 3) Завантаження прикладної партії
   // ============================
   useEffect(() => {
+ 
     const sampleMoves = [
       'e4', 'e5',
       'Nf3', 'Nc6',
@@ -51,6 +54,7 @@ function AnalysisPage() {
       'Bb3', 'd6'
     ];
     game.reset();
+    const moves = state?.moves || [];
     const moveHistory = [];
 
     sampleMoves.forEach((move) => {
@@ -72,9 +76,7 @@ function AnalysisPage() {
     setCurrentMoveIndex(moveHistory.length - 1);
   }, [game]);
 
-  // ============================
-  // 4) Ініціалізація Stockfish (основний)
-  // ============================
+
   useEffect(() => {
     if (analysisType !== 'client') return;
 
@@ -527,72 +529,73 @@ function AnalysisPage() {
   // ============================
   // 12) Головний return
   // ============================
-  return (
-    <div className="app-container">
-      <Sidebar />
-      <div className="analysis-page">
-        <div className="main-content">
-          <div className="chess-analysis-container">
-            <div className="board-section">
-              <EvalBar currentEval={currentEval} />
-              <div className="chessboard-container">
-                <ChessboardComponent
-                  fen={
-                    // Якщо є ефемерна лінія, показуємо позицію з останнього ходу цієї лінії
-                    ephemeralLine.length
-                      ? ephemeralLine[ephemeralLine.length - 1].fen
-                      : fen
-                  }
-                  onPieceDrop={handlePieceDrop}
-                  boardOrientation="white"
-                  customSquareStyles={{}}
-                />
-              </div>
-              {moveQuality && (
-                <div className={`move-quality-badge ${moveQuality}`}>
-                  {moveQuality.toUpperCase()}
-                </div>
-              )}
-            </div>
+ // ... імпорти та useState/useEffect логіка ...
 
-            <div className="moves-section">
-              <ControlPanel
-                analysisType={analysisType}
-                setAnalysisType={setAnalysisType}
-                analyzePosition={analyzePosition}
-                analyzeGame={analyzeGame}
-                depth={depth}
-                setDepth={setDepth}
-                isAnalyzing={isAnalyzing}
-              />
-              <div className="navigation-buttons">
-                <button onClick={firstMove} disabled={currentMoveIndex <= 0}>
-                  ⏮
-                </button>
-                <button onClick={prevMove} disabled={currentMoveIndex <= 0}>
-                  ◀
-                </button>
-                <button
-                  onClick={nextMove}
-                  disabled={currentMoveIndex >= history.length - 1}
-                >
-                  ▶
-                </button>
-                <button
-                  onClick={lastMove}
-                  disabled={currentMoveIndex >= history.length - 1}
-                >
-                  ⏭
-                </button>
-              </div>
-              {renderMoveHistory()}
-              {renderAnalysisInfo()}
-            </div>
+return (
+  <div className="app-container">
+    <Sidebar />
+    <div className="analysis-page">
+      <div className="main-content">
+        {/* Шахівниця та пов'язані елементи */}
+        <div className="board-section">
+          <EvalBar currentEval={currentEval} />
+          <div className="chessboard-container">
+            <ChessboardComponent
+              fen={
+                ephemeralLine.length
+                  ? ephemeralLine[ephemeralLine.length - 1].fen
+                  : fen
+              }
+              onPieceDrop={handlePieceDrop}
+              boardOrientation="white"
+              customSquareStyles={{}}
+            />
           </div>
+          {moveQuality && (
+            <div className={`move-quality-badge ${moveQuality}`}>
+              {moveQuality.toUpperCase()}
+            </div>
+          )}
+        </div>
+
+        {/* Секція для бічної панелі: ControlPanel, навігація, історія ходів, інформація про аналіз */}
+        <div className="sidebar-right"> {/* Змінено клас на 'sidebar-right' */}
+          <ControlPanel
+            analysisType={analysisType}
+            setAnalysisType={setAnalysisType}
+            analyzePosition={analyzePosition}
+            analyzeGame={analyzeGame}
+            depth={depth}
+            setDepth={setDepth}
+            isAnalyzing={isAnalyzing}
+          />
+          <div className="navigation-buttons">
+            <button onClick={firstMove} disabled={currentMoveIndex <= 0}>
+              ⏮
+            </button>
+            <button onClick={prevMove} disabled={currentMoveIndex <= 0}>
+              ◀
+            </button>
+            <button
+              onClick={nextMove}
+              disabled={currentMoveIndex >= history.length - 1}
+            >
+              ▶
+            </button>
+            <button
+              onClick={lastMove}
+              disabled={currentMoveIndex >= history.length - 1}
+            >
+              ⏭
+            </button>
+          </div>
+          {renderMoveHistory()}
+          {renderAnalysisInfo()}
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 }
 
 export default AnalysisPage;

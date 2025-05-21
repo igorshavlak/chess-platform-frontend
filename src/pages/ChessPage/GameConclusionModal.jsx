@@ -1,8 +1,6 @@
-// src/components/GameConclusionModal.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-// Прості стилі для прикладу. Ви можете використовувати CSS Modules, Styled Components тощо.
 const modalStyles = {
   overlay: {
     position: 'fixed',
@@ -10,11 +8,11 @@ const modalStyles = {
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.75)', // Напівпрозорий чорний фон
+    backgroundColor: 'rgba(0, 0, 0, 0.75)',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 1000, // Переконайтеся, що модальне вікно поверх усього
+    zIndex: 1000,
   },
   modal: {
     backgroundColor: '#fff',
@@ -33,44 +31,46 @@ const modalStyles = {
   },
   buttonContainer: {
     display: 'flex',
-    flexDirection: 'column', // Кнопки одна під одною
-    gap: '15px', // Відстань між кнопками
+    flexDirection: 'column',
+    gap: '15px',
   },
   button: {
     padding: '10px 20px',
     fontSize: '1em',
     borderRadius: '5px',
     cursor: 'pointer',
-    textDecoration: 'none', // Для Link
-    display: 'block', // Для Link, щоб поводився як блок
+    textDecoration: 'none',
+    display: 'block',
   },
   analyzeButton: {
-    backgroundColor: '#4CAF50', // Зелений колір
+    backgroundColor: '#4CAF50',
     color: 'white',
     border: 'none',
   },
   closeButton: {
-    backgroundColor: '#f44336', // Червоний колір
+    backgroundColor: '#f44336',
     color: 'white',
     border: 'none',
   }
 };
 
-export default function GameConclusionModal({ isOpen, onClose, message, gameId }) {
+export default function GameConclusionModal({ isOpen, onClose, message, gameId, moves }) {
   if (!isOpen) {
-    return null; // Не рендеримо, якщо isOpen false
+    return null;
   }
 
   return (
-    <div style={modalStyles.overlay} onClick={onClose}> {/* Закриття при кліку по оверлею */}
-      <div style={modalStyles.modal} onClick={(e) => e.stopPropagation()}> {/* Зупиняємо спливання кліку, щоб не закривалось */}
+    <div style={modalStyles.overlay} onClick={onClose}>
+      <div style={modalStyles.modal} onClick={(e) => e.stopPropagation()}>
         <div style={modalStyles.message}>{message}</div>
         <div style={modalStyles.buttonContainer}>
-          {/* Приклад посилання на сторінку аналізу. Вам потрібно буде реалізувати цей маршрут */}
           <Link
-            to={`/analyze/${gameId}`}
+            to={{
+              pathname: `/analyze/${gameId}`,
+              state: { moves } // Передаємо список ходів у state
+            }}
             style={{ ...modalStyles.button, ...modalStyles.analyzeButton }}
-            onClick={onClose} // Закрити модальне вікно при переході
+            onClick={onClose}
           >
             Аналізувати партію
           </Link>

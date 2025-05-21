@@ -1,7 +1,7 @@
 // src/pages/ChessPageContainer.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { Chess } from 'chess.js';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 import { useKeycloak } from '@react-keycloak/web';
@@ -13,9 +13,10 @@ export default function ChessPageContainer() {
   const { keycloak } = useKeycloak();
   const token = keycloak.token;
   const meId = keycloak.tokenParsed?.sub;
+  const navigate = useNavigate()
 
   // === chess.js та стан дошки ===
-  const [game] = useState(new Chess());
+  const [game] = useState(new Chess()); 
   const [fen, setFen] = useState('start');
   const [moves, setMoves] = useState([]);
   const [lastMove, setLastMove] = useState(null);
@@ -294,6 +295,7 @@ export default function ChessPageContainer() {
             onClose={handleCloseModal}
             message={gameStatus}
             gameId={gameId}
+            moves={moves}
           />
         </>
       );

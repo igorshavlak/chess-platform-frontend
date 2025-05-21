@@ -92,7 +92,7 @@ function App() {
           <Route path="/play/bot" element={<ChessBotPageContainer />} /> {/* Новий маршрут */}
         
           <Route path="/chats" element={<ChatsPage />} />
-          <Route path="/analysis" element={<AnalysisPage />} />
+          <Route path="/analyze/:gameId" element={<AnalysisPage />} />
           <Route path="/social" element={<SocialPage />} />
           <Route path="/" element={<HomePage />} />
           <Route path="/game/:gameId" element={<ChessPageContainer />} />

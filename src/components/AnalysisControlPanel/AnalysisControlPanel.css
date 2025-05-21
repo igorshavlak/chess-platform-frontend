@@ -164,3 +164,37 @@
       flex-direction: row;
     }
   }
+  /* AnalysisControlPanel.css */
+
+.control-panel {
+    background-color: #2e2e2e;
+    border-radius: 6px;
+    padding: 1.2rem;
+    margin-bottom: 1rem; /* Відступ знизу, щоб не прилипало до навігаційних кнопок */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    width: 100%; /* Займає всю доступну ширину свого батьківського контейнера */
+    /* max-width: 300px; - Цей стиль вже не потрібен тут, оскільки розмір буде контролюватися батьківським .sidebar-right */
+}
+
+/* ... решта стилів залишається без змін ... */
+
+/* Медіа-запити для ControlPanel.css - оновлені */
+@media (max-width: 1200px) {
+    .control-panel {
+        max-width: none; /* Знімаємо обмеження, якщо воно було встановлено */
+        width: 100%;
+    }
+    
+    .analysis-type-buttons,
+    .analysis-buttons {
+      flex-direction: row; /* Залишаємо в ряд для більших екранів */
+    }
+}
+
+/* На менших екранах (якщо sidebar-right стає 100% ширини) */
+@media (max-width: 768px) {
+    .analysis-type-buttons,
+    .analysis-buttons {
+        flex-direction: column; /* Знову стовпцем для компактності */
+    }
+}

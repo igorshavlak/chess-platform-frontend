@@ -1,5 +1,6 @@
+/* AnalysisPage.css */
 
-/* Загальний контейнер */
+/* Основний контенер додатку */
 .app-container {
   display: flex;
   height: 100vh;
@@ -18,10 +19,10 @@
   overflow: hidden;
 }
 
-/* Основний контент */
+/* Основний контент (шахівниця + права бічна панель) */
 .main-content {
-  display: flex;
-  flex-direction: row !important;
+  display: flex; /* Зробіть це flex-контейнером */
+  flex-direction: row; /* Розмістить елементи в ряд */
   flex: 1;
   height: 100%;
   padding: 1rem;
@@ -32,12 +33,14 @@
 /* Секція з дошкою та смугою оцінки */
 .board-section {
   display: flex;
-  flex-direction: row;
-  flex: 3;
+  flex-direction: row; /* Залишаємо row для EvalBar та ChessboardComponent */
+  flex: 3; /* Або будь-який інший flex-grow для співвідношення розмірів */
   gap: 1rem;
   position: relative;
   align-items: center;
   justify-content: center;
+  /* Додайте, якщо потрібно, щоб EvalBar був вертикально зліва */
+  /* align-items: stretch; */
 }
 
 /* Контейнер для шахової дошки */
@@ -101,11 +104,11 @@
   color: #fff;
 }
 
-/* Панель ходів */
-.moves-section {
+/* Нова секція для правої бічної панелі (колишня moves-section) */
+.sidebar-right { /* Змінено з .moves-section */
   display: flex;
   flex-direction: column;
-  width: 340px;
+  width: 340px; /* Фіксована ширина для правої панелі */
   min-width: 300px;
   height: 100%;
   background-color: #2e2e2e;
@@ -243,16 +246,17 @@
   color: #eee;
 }
 
+/* Медіа-запити - оновлені */
 @media (max-width: 1200px) {
   .main-content {
-    flex-direction: row !important;
+    flex-direction: row; /* Залишаємо row для великих екранів */
     gap: 1rem;
   }
   .board-section {
     flex: 3;
     margin-bottom: 0;
   }
-  .moves-section {
+  .sidebar-right { /* Змінено з .moves-section */
     width: 340px;
     min-width: 300px;
     max-width: 340px;
@@ -263,15 +267,16 @@
 
 @media (max-width: 768px) {
   .main-content {
-    flex-direction: column !important;
+    flex-direction: column; /* На малих екранах робимо стовпцем */
   }
   .chessboard-container {
     max-height: 60vh;
   }
-  .moves-section {
+  .sidebar-right { /* Змінено з .moves-section */
     width: 100%;
     max-width: 100%;
   }
+  /* Ці стилі для ControlPanel.css, але якщо вони в analysis-page.css, то залишаємо */
   .analysis-type-buttons,
   .analysis-buttons {
     flex-direction: column;
@@ -288,5 +293,115 @@
   }
   .navigation-buttons button {
     padding: 0.4rem 0;
+  }
+}
+/* AnalysisPage.css */
+
+/* ... (інші стилі залишаються без змін до цього) ... */
+
+/* Основний контент (шахівниця + права бічна панель) */
+.main-content {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  height: 100%;
+  padding: 1rem;
+  /* Зменшуємо gap або прибираємо його, якщо ви хочете контролювати простір іншим чином */
+  gap: 0.5rem; /* Змінено з 1.5rem на 0.5rem (можна експериментувати) */
+  justify-content: center; /* Центрує вміст, якщо місця більше, ніж потрібно */
+  align-items: center; /* Центрує по вертикалі */
+  overflow: hidden;
+}
+
+/* Секція з дошкою та смугою оцінки */
+.board-section {
+  display: flex;
+  flex-direction: row; /* EvalBar зліва, дошка справа */
+  /* Змінюємо flex на щось, що дасть дошці займати лише потрібний простір. */
+  /* Можна спробувати flex-shrink: 0, або встановити конкретні розміри. */
+  /* Якщо board-section вже має flex: 3, це означає, що вона буде займати більше місця. */
+  /* Для того, щоб панель була ближче, можливо, board-section не повинна так сильно розтягуватися. */
+  /* Залишимо flex: 3 поки що, але додамо flex-shrink. */
+  flex: 0 0 auto; /* Змінено: не розтягується, не стискається, займає лише необхідний простір */
+  gap: 1rem;
+  position: relative;
+  align-items: center;
+  justify-content: center; /* Центрує шахівницю всередині board-section */
+}
+
+/* Контейнер для шахової дошки */
+.chessboard-container {
+  /* Ваші поточні розміри calc(100vh - 10rem) роблять дошку дуже великою. */
+  /* Можливо, варто використовувати vmax або vw/vh для більш гнучкого розміру, */
+  /* або просто задати max-width/max-height. */
+  /* Спробуйте більш гнучкі розміри: */
+  width: min(80vh, 80vw, 700px); /* Макс 700px, або 80% від меншого з vh/vw */
+  height: min(80vh, 80vw, 700px); /* Те саме, що й вище */
+  min-width: 400px; /* Зменшено мінімальний розмір, якщо потрібно */
+  min-height: 400px; /* Зменшено мінімальний розмір, якщо потрібно */
+  /* max-width: 90%; */ /* Цей стиль може бути зайвим з новими width/height */
+  /* max-height: 90vh; */ /* Цей стиль може бути зайвим з новими width/height */
+  background-color: #333;
+  border-radius: 6px;
+  position: relative;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ... (інші стилі залишаються без змін після цього) ... */
+
+/* Нова секція для правої бічної панелі (колишня moves-section) */
+.sidebar-right {
+  display: flex;
+  flex-direction: column;
+  width: 340px; /* Залишаємо фіксовану ширину для правої панелі */
+  min-width: 300px;
+  /* max-width: 340px; - це може бути зайвим, якщо width вже 340px */
+  height: 100%;
+  background-color: #2e2e2e;
+  border-radius: 6px;
+  padding: 1rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  /* Додаємо flex-shrink, щоб вона не стискалася, якщо місце обмежене, але має пріоритет */
+  flex-shrink: 0;
+}
+
+/* Медіа-запити - оновлені */
+@media (max-width: 1200px) {
+  .main-content {
+    flex-direction: row;
+    gap: 0.5rem; /* Зменшуємо gap і тут */
+  }
+  .board-section {
+    flex: 0 0 auto; /* Залишаємо гнучкість, але з пріоритетом на вміст */
+    margin-bottom: 0;
+  }
+  .sidebar-right {
+    width: 340px;
+    min-width: 300px;
+    max-width: 340px;
+    height: auto;
+    max-height: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    flex-direction: column; /* На малих екранах робимо стовпцем */
+    gap: 1rem; /* Можливо, збільшити gap, коли елементи розташовані стовпцем */
+  }
+  .chessboard-container {
+    max-height: 60vh;
+    width: min(70vw, 70vh, 500px); /* Або просто 100% width, якщо дошка має адаптуватися */
+    height: min(70vw, 70vh, 500px);
+    min-width: unset; /* Скидаємо min-width, щоб дошка могла стискатися */
+    min-height: unset;
+  }
+  .sidebar-right {
+    width: 100%;
+    max-width: 100%;
   }
 }
