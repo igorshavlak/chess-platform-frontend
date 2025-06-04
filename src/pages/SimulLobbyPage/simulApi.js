@@ -4,7 +4,7 @@ import { useKeycloak } from '@react-keycloak/web';
 import { useCallback } from 'react'; // Додано useCallback
 
 // Базовий URL для контролера SimulLobbyController
-const API_BASE_URL = 'http://localhost:8082/api/games/simul'; // Переконайтесь, що порт та шлях коректні
+const API_BASE_URL = `http://${import.meta.env.BACKEND_SERVER_IP}:8082/api/games/simul`; // Переконайтесь, що порт та шлях коректні
 
 
 // Створюємо функцію-хук, яка повертає API функції з автоматичною авторизацією

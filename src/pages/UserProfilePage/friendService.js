@@ -1,5 +1,5 @@
 const USE_MOCK = false
-const API_BASE = 'http://localhost:8082'
+const API_BASE = `http://${import.meta.env.BACKEND_SERVER_IP}:8082`
 
 // Мок-дані (фігурні для прикладу)
 const mockFriends = [

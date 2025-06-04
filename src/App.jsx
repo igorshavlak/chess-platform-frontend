@@ -17,6 +17,7 @@ import ChatsPage from './pages/ChatsPage/ChatsPage.jsx';
 import GameRequestsPage from './pages/GameRequestsPage/GameRequestsPage.jsx';
 import websocketService from './components/websocketService.js';
 import ChessBotPageContainer from './pages/ChessPage/ChessBotPageContainer'; // Нова сторінка з ботом
+import RegistrationPage from './pages/RegistrationPage/RegistrationPage.jsx';
 
 
 
@@ -53,11 +54,21 @@ export const WSSContext = createContext({
 });
 
 function App() {
+      if (!window.crypto || !window.crypto.getRandomValues) {
+      window.crypto = {
+        getRandomValues(buf) {
+          for (let i = 0; i < buf.length; i++) {
+            buf[i] = Math.floor(Math.random() * 256);
+          }
+          return buf;
+        }
+      };
+    }
   const { keycloak } = useKeycloak();
   const userId = keycloak?.tokenParsed?.sub;
   const token = keycloak.token;
   const useMock = 'false';
-  const WS_URL = 'http://localhost:8082/ws-notifications';
+  const WS_URL = `http://${import.meta.env.BACKEND_SERVER_IP}:8082/ws-notifications`;
   const [wsConnected, setWsConnected] = useState(false);
 
   useEffect(() => {
@@ -82,6 +93,7 @@ function App() {
     }}>
       <Router>
         <Routes>
+           <Route path="/register" element={<RegistrationPage />} />
           <Route path="/requests" element={<GameRequestsPage />} />
           <Route path="/simul/lobby/:lobbyId" element={
             <PrivateRoute>

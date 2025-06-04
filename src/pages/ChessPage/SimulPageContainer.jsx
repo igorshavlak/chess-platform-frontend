@@ -78,7 +78,7 @@ const [modalContent, setModalContent] = useState({ title: '', message: '', outco
   useEffect(() => {
     if (!token || !meId || !simulSessionId) return;
 
-    fetch(`http://localhost:8082/api/games/simul/getSimulGames/${simulSessionId}`, {
+    fetch(`http://${import.meta.env.BACKEND_SERVER_IP}:8082/api/games/simul/getSimulGames/${simulSessionId}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => res.json())
@@ -216,7 +216,7 @@ const [modalContent, setModalContent] = useState({ title: '', message: '', outco
   useEffect(() => {
     if (!token || !simulGamesData.length > 0) return; // Залежить від наявності даних ігор для підписок
 
-    const socket = new SockJS('http://localhost:8082/ws-game');
+    const socket = new SockJS(`http://${import.meta.env.BACKEND_SERVER_IP}:8082/ws-game`);
     const client = new Client({
       webSocketFactory: () => socket,
       connectHeaders: { Authorization: `Bearer ${token}` },

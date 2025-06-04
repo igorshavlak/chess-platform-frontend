@@ -5,6 +5,21 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite + React</title>
+    <script src="http://192.168.0.105:8888/auth/js/keycloak.js"></script>
+
+      <script>
+    // Полифилл для Web Crypto API в НЕ-HTTPS среде
+    if (!window.crypto || !window.crypto.getRandomValues) {
+      window.crypto = {
+        getRandomValues(buf) {
+          for (let i = 0; i < buf.length; i++) {
+            buf[i] = Math.floor(Math.random() * 256);
+          }
+          return buf;
+        }
+      };
+    }
+  </script>
   </head>
   <body>
     <div id="root"></div>

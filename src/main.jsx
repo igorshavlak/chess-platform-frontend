@@ -1,3 +1,4 @@
+import crypto from 'isomorphic-webcrypto';
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { ReactKeycloakProvider } from '@react-keycloak/web';
@@ -7,6 +8,7 @@ import keycloak from './keycloak';
 import App from './App.jsx'
 
 Modal.setAppElement('#root');
+
 
 const handleOnEvent = (event, error) => {
   console.log('Keycloak event', event, error);
@@ -36,7 +38,7 @@ createRoot(document.getElementById('root')).render(
     authClient={keycloak}
     initOptions={{
       onLoad: 'check-sso',
-      pkceMethod: 'S256',
+      pkceMethod: false, 
       checkLoginIframe: false, // Отключаем проверку через iframe
     }}
     onEvent={handleOnEvent}

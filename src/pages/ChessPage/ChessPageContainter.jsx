@@ -51,7 +51,7 @@ export default function ChessPageContainer() {
   // 1) Fetch початкових даних і налаштування часу
   useEffect(() => {
     if (!token || !meId) return;
-    fetch(`http://localhost:8082/api/games/getGameInfo/${gameId}`, {
+    fetch(`http://${import.meta.env.BACKEND_SERVER_IP}:8082/api/games/getGameInfo/${gameId}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => res.json())
@@ -97,7 +97,7 @@ export default function ChessPageContainer() {
   // 2) STOMP: обробка ходів від сервера
   useEffect(() => {
     if (!token) return;
-    const socket = new SockJS('http://localhost:8082/ws-game');
+    const socket = new SockJS(`http://${import.meta.env.BACKEND_SERVER_IP}:8082/ws-game`);
     const client = new Client({
       webSocketFactory: () => socket,
       connectHeaders: { Authorization: `Bearer ${token}` },

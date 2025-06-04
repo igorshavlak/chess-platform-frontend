@@ -264,3 +264,79 @@
 .profile-link .user-details {
   margin-bottom: 0.5rem;
 }
+/* src/components/Sidebar/Sidebar.css (Add to the end of the file) */
+
+/* Стилі для кнопок аутентифікації */
+.auth-buttons {
+    margin-top: auto; /* Розміщуємо кнопки внизу сайдбару */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem 0;
+    border-top: 1px solid #333333;
+    width: 100%;
+}
+
+.auth-button {
+    background-color: #555555;
+    color: #ffffff;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    margin-top: 0.75rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s, transform 0.2s;
+    width: 80%; /* Щоб кнопки мали однакову ширину */
+    text-align: center;
+    text-decoration: none; /* Для NavLink */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.auth-button:hover {
+    background-color: #666666;
+    transform: translateY(-2px);
+}
+
+.auth-button .icon {
+    margin-right: 0.5rem;
+}
+
+/* Специфічний стиль для кнопки реєстрації */
+.register-button-sidebar {
+    background-color: #4caf50; /* Зелений колір, як у активного посилання */
+}
+
+.register-button-sidebar:hover {
+    background-color: #43a047;
+}
+
+@media (max-width: 1200px) {
+    .auth-buttons {
+        flex-direction: row; /* Горизонтальне розташування на маленьких екранах */
+        justify-content: center;
+        gap: 0.5rem; /* Відстань між кнопками */
+        padding: 0.5rem;
+        border-top: none;
+    }
+
+    .auth-button {
+        width: auto; /* Автоматична ширина */
+        padding: 0.5rem 1rem;
+        margin-top: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .auth-buttons {
+        flex-direction: column; /* Знову вертикально на дуже малих екранах */
+        padding: 1rem 0;
+        border-top: 1px solid #333333;
+    }
+
+    .auth-button {
+        width: 80%; /* Повернути ширину */
+    }
+}

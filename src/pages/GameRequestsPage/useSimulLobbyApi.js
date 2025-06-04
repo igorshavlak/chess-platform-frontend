@@ -3,7 +3,7 @@ import { useState, useEffect, useContext, useCallback } from 'react';
 import { useKeycloak } from '@react-keycloak/web';
 import { WSSContext } from '../../App';
 
-const API_BASE_URL = 'http://localhost:8082/api/games/simul';
+const API_BASE_URL = `http://${import.meta.env.BACKEND_SERVER_IP}:8082/api/games/simul`;
 
 function useSimulLobbyApi() {
     const { keycloak, initialized } = useKeycloak();
