@@ -52,7 +52,7 @@ function RegistrationPage() {
         e.preventDefault();
         if (validateForm()) {
             try {
-                const response = await fetch(`http://${import.meta.env.BACKEND_SERVER_IP}:8082/api/users/register`, { // Замініть на ваш реальний ендпоінт
+                const response = await fetch(`http://${import.meta.env.VITE_BACKEND_SERVER_IP}:8082/api/users/register`, { // Замініть на ваш реальний ендпоінт
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

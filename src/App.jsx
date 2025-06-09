@@ -54,7 +54,7 @@ export const WSSContext = createContext({
 });
 
 function App() {
-      if (!window.crypto || !window.crypto.getRandomValues) {
+     /* if (!window.crypto || !window.crypto.getRandomValues) {
       window.crypto = {
         getRandomValues(buf) {
           for (let i = 0; i < buf.length; i++) {
@@ -64,11 +64,12 @@ function App() {
         }
       };
     }
+    */
   const { keycloak } = useKeycloak();
   const userId = keycloak?.tokenParsed?.sub;
   const token = keycloak.token;
   const useMock = 'false';
-  const WS_URL = `http://${import.meta.env.BACKEND_SERVER_IP}:8082/ws-notifications`;
+  const WS_URL = `http://${import.meta.env.VITE_BACKEND_SERVER_IP}:8082/ws-notifications`;
   const [wsConnected, setWsConnected] = useState(false);
 
   useEffect(() => {

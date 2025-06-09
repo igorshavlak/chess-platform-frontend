@@ -1,10 +1,10 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8082/api/matchmaking';
+const API_BASE = `http://${import.meta.env.VITE_BACKEND_SERVER_IP}:8082`
 
 export const enqueuePlayer = async (enqueueData, token) => {
   try {
-    const response = await axios.post(`${API_URL}/enqueue`, enqueueData, {
+    const response = await axios.post(`${API_BASE}/api/matchmaking/enqueue`, enqueueData, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'

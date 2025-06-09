@@ -78,7 +78,7 @@ const [modalContent, setModalContent] = useState({ title: '', message: '', outco
   useEffect(() => {
     if (!token || !meId || !simulSessionId) return;
 
-    fetch(`http://${import.meta.env.BACKEND_SERVER_IP}:8082/api/games/simul/getSimulGames/${simulSessionId}`, {
+    fetch(`http://${import.meta.env.VITE_BACKEND_SERVER_IP}:8082/api/games/simul/getSimulGames/${simulSessionId}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => res.json())

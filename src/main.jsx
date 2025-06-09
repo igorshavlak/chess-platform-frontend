@@ -38,7 +38,7 @@ createRoot(document.getElementById('root')).render(
     authClient={keycloak}
     initOptions={{
       onLoad: 'check-sso',
-      pkceMethod: false, 
+      pkceMethod: 'S256', 
       checkLoginIframe: false, // Отключаем проверку через iframe
     }}
     onEvent={handleOnEvent}
@@ -47,7 +47,7 @@ createRoot(document.getElementById('root')).render(
     }}
     autoRefreshToken={true}
   >
-    <App />
+    <App/>
   </ReactKeycloakProvider>
 
 )
