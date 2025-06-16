@@ -1,100 +1,131 @@
 // src/components/UserProfile/StatsContent.jsx
-import React from 'react';
-import { FaChartLine, FaChessKnight } from 'react-icons/fa';
+import React, { useState } from 'react';
+import { FaChartLine, FaChess, FaTrophy, FaArrowUp, FaArrowDown } from 'react-icons/fa';
 import '../../pages/UserProfilePage/UserProfilePage.css';
 
+// Компонент для лінійного графіка
+const RatingLineChart = ({ data }) => {
+    if (!data || data.length === 0) {
+        return <div className="no-data">Немає даних для відображення</div>;
+    }
+
+    const width = 500;
+    const height = 150;
+    const padding = 30;
+
+    const ratings = data.map(d => d.rating);
+    const minRating = Math.min(...ratings) - 50;
+    const maxRating = Math.max(...ratings) + 50;
+
+    const getX = (index) => (index / (data.length - 1)) * (width - 2 * padding) + padding;
+    const getY = (rating) => height - ((rating - minRating) / (maxRating - minRating)) * (height - 2 * padding) - padding;
+
+    const linePath = data.map((d, i) => `${i === 0 ? 'M' : 'L'} ${getX(i)} ${getY(d.rating)}`).join(' ');
+
+    return (
+        <svg viewBox={`0 0 ${width} ${height}`} className="rating-line-chart">
+            {/* Горизонтальні лінії сітки */}
+            {[...Array(5)].map((_, i) => (
+                <line
+                    key={i}
+                    className="chart-grid-line"
+                    x1={padding}
+                    y1={height - padding - (i * (height - 2 * padding) / 4)}
+                    x2={width - padding}
+                    y2={height - padding - (i * (height - 2 * padding) / 4)}
+                />
+            ))}
+
+            {/* Лінія рейтингу */}
+            <path d={linePath} className="chart-line-path" fill="none" />
+
+            {/* Точки на графіку */}
+            {data.map((d, i) => (
+                <circle
+                    key={i}
+                    cx={getX(i)}
+                    cy={getY(d.rating)}
+                    r="4"
+                    className="chart-point"
+                    data-rating={d.rating}
+                />
+            ))}
+        </svg>
+    );
+};
+
+
 const StatsContent = ({ userData }) => {
-  if (!userData) return null;
-  const { rating, gamesPlayed, wins, losses, draws, favoriteOpenings, ratingHistory } = userData;
+    const [activeMode, setActiveMode] = useState('blitz');
 
-  return (
-    <div className="stats-container">
-      <div className="stats-overview">
-        <div className="stats-card">
-          <div className="stats-header">
-            <FaChartLine className="stats-icon" />
-            <h3>Рейтинг</h3>
-          </div>
-          <div className="rating-value">{rating}</div>
-          <div className="rating-chart">
-            {ratingHistory.map((data, i) => (
-              <div key={i} className="chart-bar-container">
-                <div
-                  className="chart-bar"
-                  style={{ height: `${Math.max(0, (data.rating - 1600) / 5)}px` }}
-                ></div>
-                <span className="chart-label">{data.month}</span>
-              </div>
-            ))}
-          </div>
-        </div>
+    if (!userData || !userData.stats) return null;
 
-        <div className="stats-card">
-          <div className="stats-header">
-            <FaChessKnight className="stats-icon" />
-            <h3>Партії</h3>
-          </div>
-          <div className="games-stats">
-            <div className="games-played">
-              <span className="games-number">{gamesPlayed}</span>
-              <span className="games-label">зіграно</span>
+    const stats = userData.stats[activeMode];
+    const { rating, highestRating, gamesPlayed, wins, losses, draws, winStreak, lossStreak, ratingHistory } = stats;
+    const winRate = gamesPlayed > 0 ? Math.round((wins / gamesPlayed) * 100) : 0;
+
+    return (
+        <div className="stats-container">
+            {/* Перемикач режимів гри */}
+            <div className="stats-mode-selector">
+                <button onClick={() => setActiveMode('classic')} className={`mode-btn ${activeMode === 'classic' ? 'active' : ''}`}>Класика</button>
+                <button onClick={() => setActiveMode('blitz')} className={`mode-btn ${activeMode === 'blitz' ? 'active' : ''}`}>Бліц</button>
+                <button onClick={() => setActiveMode('bullet')} className={`mode-btn ${activeMode === 'bullet' ? 'active' : ''}`}>Куля</button>
             </div>
-            <div className="games-chart">
-              <div className="chart-pie">
-                <div
-                  className="pie-segment wins"
-                  style={{ '--percentage': `${(wins / gamesPlayed) * 100}%` }}
-                ></div>
-                <div
-                  className="pie-segment draws"
-                  style={{ '--percentage': `${(draws / gamesPlayed) * 100}%` }}
-                ></div>
-                <div
-                  className="pie-segment losses"
-                  style={{ '--percentage': `${(losses / gamesPlayed) * 100}%` }}
-                ></div>
-              </div>
-              <div className="chart-legend">
-                <div className="legend-item">
-                  <span className="legend-color wins"></span>
-                  <span className="legend-label">Перемоги: {wins}</span>
-                </div>
-                <div className="legend-item">
-                  <span className="legend-color draws"></span>
-                  <span className="legend-label">Нічиї: {draws}</span>
-                </div>
-                <div className="legend-item">
-                  <span className="legend-color losses"></span>
-                  <span className="legend-label">Поразки: {losses}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
 
-        <div className="stats-card">
-          <div className="stats-header">
-            <FaChessKnight className="stats-icon" />
-            <h3>Улюблені дебюти</h3>
-          </div>
-          <div className="openings-list">
-            {favoriteOpenings.map((o, i) => (
-              <div key={i} className="opening-item">
-                <div className="opening-name">{o.name}</div>
-                <div className="opening-stats">
-                  <span className="opening-games">{o.games} партій</span>
-                  <div className="opening-winrate">
-                    <div className="winrate-bar" style={{ width: `${o.winRate}%` }}></div>
-                    <span className="winrate-text">{o.winRate}% перемог</span>
-                  </div>
+            <div className="stats-grid">
+                {/* Картка з графіком рейтингу */}
+                <div className="stats-card main-chart-card">
+                    <div className="stats-header">
+                        <FaChartLine className="stats-icon" />
+                        <h3>Історія рейтингу ({rating})</h3>
+                    </div>
+                    <RatingLineChart data={ratingHistory} />
                 </div>
-              </div>
-            ))}
-          </div>
+
+                {/* Картка загальної статистики партій */}
+                <div className="stats-card">
+                    <div className="stats-header">
+                        <FaChess className="stats-icon" />
+                        <h3>Статистика партій</h3>
+                    </div>
+                    <div className="game-stats-content">
+                        <p className="total-games">{gamesPlayed} <span>зіграно</span></p>
+                        <div className="win-rate-bar">
+                            <div className="win-rate-fill" style={{ width: `${winRate}%` }}></div>
+                            <span className="win-rate-text">{winRate}% перемог</span>
+                        </div>
+                        <ul className="game-breakdown">
+                            <li><span className="color-dot win"></span>Перемоги: <strong>{wins}</strong></li>
+                            <li><span className="color-dot draw"></span>Нічиї: <strong>{draws}</strong></li>
+                            <li><span className="color-dot loss"></span>Поразки: <strong>{losses}</strong></li>
+                        </ul>
+                    </div>
+                </div>
+
+                {/* Додаткові картки */}
+                <div className="stats-card small-card">
+                    <div className="stats-header">
+                        <FaTrophy className="stats-icon" />
+                        <h3>Найвищий рейтинг</h3>
+                    </div>
+                    <p className="highlight-stat">{highestRating}</p>
+                </div>
+
+                <div className="stats-card small-card">
+                    <div className="stats-header">
+                        <FaArrowUp className="stats-icon" />
+                        <FaArrowDown className="stats-icon" />
+                        <h3>Серії</h3>
+                    </div>
+                    <div className="streaks-info">
+                        <p>Перемог: <strong className="win-streak">{winStreak}</strong></p>
+                        <p>Поразок: <strong className="loss-streak">{lossStreak}</strong></p>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default StatsContent;

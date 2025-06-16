@@ -30,6 +30,9 @@ const ChessPageUI = ({
   onMoveBackward,
   onMoveForward,
   onRestart,
+
+  boardStyle, 
+  pieceStyle,
 }) => (
   <div className="chess-page">
     <Sidebar />
@@ -57,6 +60,8 @@ const ChessPageUI = ({
           onPieceDrop={onPieceDrop}
           customSquareStyles={customSquareStyles}
           boardOrientation={boardOrientation}
+          boardStyle={boardStyle}
+          pieceStyle={pieceStyle}
         />
       </div>
 

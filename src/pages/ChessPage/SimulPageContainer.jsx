@@ -1,566 +1,205 @@
-// SimulPageContainer.jsx
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Chess } from 'chess.js';
+import React, { useEffect, useRef, useCallback, useReducer } from 'react';
 import { useParams } from 'react-router-dom';
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 import { useKeycloak } from '@react-keycloak/web';
+import { simulReducer, initialState } from './simulReducer';
+import { useSettings } from '../../context/SettingsContext';
 import SimulPageUI from './SimulPageUI';
+// === NEW: Імпортуємо Chess для розрахунку FEN в режимі історії ===
+import { Chess } from 'chess.js';
 
-// String.prototype.hashCode() - This is a custom method, ensure it's defined somewhere
-// or use a standard library for hashing if needed for avatars.
-// If not needed, just remove the avatar line or replace with a static image.
-// Example simple polyfill for hashCode if not globally available:
+// Хеш-функція для рядків, якщо вона не визначена
 if (!String.prototype.hashCode) {
-  String.prototype.hashCode = function () {
-    let hash = 0;
-    for (let i = 0; i < this.length; i++) {
-      const char = this.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash |= 0; // Convert to 32bit integer
-    }
-    return hash;
-  };
+    String.prototype.hashCode = function () { let hash = 0; for (let i = 0; i < this.length; i++) { const char = this.charCodeAt(i); hash = ((hash << 5) - hash) + char; hash |= 0; } return hash; };
 }
 
-
 export default function SimulPageContainer() {
-  console.log('SimulPageContainer рендериться'); // <--- Змінено для коректності
+  const { settings, isLoading } = useSettings();
   const { simulSessionId } = useParams();
-  console.log('simulSessionId:', simulSessionId);
   const { keycloak } = useKeycloak();
   const token = keycloak.token;
   const meId = keycloak.tokenParsed?.sub;
-  console.log('Token:', token ? 'присутній' : 'відсутній');
-  console.log('Me ID:', meId);
 
-  const [simulGamesData, setSimulGamesData] = useState([]);
-  const [activeSimulGameId, setActiveSimulGameId] = useState(null);
+  const [state, dispatch] = useReducer(simulReducer, initialState);
+  const { status, games, activeGameId, stats, modal } = state;
 
-  const [fen, setFen] = useState('start');
-  const [moves, setMoves] = useState([]);
-  const [lastMove, setLastMove] = useState(null);
-  const [whiteTime, setWhiteTime] = useState(null);
-  const [blackTime, setBlackTime] = useState(null);
-  const [increment, setIncrement] = useState(0);
-  const [currentPlayer, setCurrentPlayer] = useState(null);
-  const [gameMode, setGameMode] = useState(null);
-  const [timeControl, setTimeControl] = useState(null);
-  const [gameStatus, setGameStatus] = useState('Гра йде');
-  const [localColor, setLocalColor] = useState('w');
-  const [capturedByWhite, setCapturedByWhite] = useState([]);
-  const [capturedByBlack, setCapturedByBlack] = useState([]);
-  // const [players, setPlayers] = useState(null); // <--- ВИДАЛЕНО, оскільки це надлишковий стан
+  const stompClientRef = useRef(null);
+  const timerRef = useRef(null);
 
-  const [now, setNow] = useState(Date.now());
-
-  const timerRefs = useRef({});
-  const [stompClient, setStompClient] = useState(null);
-  const [autoSwitchEnabled, setAutoSwitchEnabled] = useState(false);
-  const autoSwitchIntervalRef = useRef(null);
-  const autoSwitchIndexRef = useRef(0);
-
-  const [stats, setStats] = useState({ wins: 0, losses: 0, draws: 0 });
-const [showModal, setShowModal] = useState(false);
-const [modalContent, setModalContent] = useState({ title: '', message: '', outcome: '' });
-
-  const startAutoSwitchRef = useRef(null);
-
-  const updateGameData = useCallback((gameIdToUpdate, newPartialData) => {
-    setSimulGamesData(prevGames => {
-      const updatedGames = prevGames.map(game =>
-        game.gameId === gameIdToUpdate ? { ...game, ...newPartialData } : game
-      );
-      return updatedGames;
-    });
-  }, []);
-
+  // useEffect для завантаження даних - без змін
   useEffect(() => {
     if (!token || !meId || !simulSessionId) return;
-
     fetch(`http://${import.meta.env.VITE_BACKEND_SERVER_IP}:8082/api/games/simul/getSimulGames/${simulSessionId}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
-      .then(res => res.json())
-      .then(simulGamesResponse => {
-        console.log('Отримані дані ігор:', simulGamesResponse);
-        const initialSimulGames = simulGamesResponse.map(gameData => {
-
-          
-          const chessInstance = new Chess();
-          gameData.moves.forEach(m => chessInstance.move(m));
-
-          const localColorInGame = meId === String(gameData.whitePlayerId) ? 'w' : (meId === String(gameData.blackPlayerId) ? 'b' : null);
-
-          let capturedByWhite = [];
-          let capturedByBlack = [];
-          const tempChessInstance = new Chess();
-          gameData.moves.forEach(moveSan => {
-            const result = tempChessInstance.move(moveSan);
-            if (result && result.captured) {
-              result.color === 'w'
-                ? capturedByWhite.push(result.captured)
-                : capturedByBlack.push(result.captured);
-            }
-          });
-
-          return {
-            gameId: gameData.gameId,
-            fen: chessInstance.fen(),
-            moves: gameData.moves,
-            lastMove: gameData.moves.length > 0
-              ? chessInstance.history({ verbose: true }).slice(-1)[0]
-              : null,
-            whiteDeadline: gameData.whiteDeadline,
-            blackDeadline: gameData.blackDeadline,
-            whiteTime: Math.ceil(gameData.whiteTimeMillis / 1000),
-            blackTime: Math.ceil(gameData.blackTimeMillis / 1000),
-            increment: Math.ceil(gameData.incrementMillis / 1000) || 0,
-            currentPlayer: chessInstance.turn(),
-            gameMode: gameData.gameMode,
-            timeControl: gameData.timeControl,
-            gameStatus: 'Гра йде', // Припустимо, що всі ігри починаються як "Гра йде"
-            localColor: localColorInGame,
-            capturedByWhite: capturedByWhite,
-            capturedByBlack: capturedByBlack,
-            players: { // `players` тепер частина об'єкта гри
-              white: {
-                name: gameData.whitePlayerName || 'Білі',
-                avatar: `https://i.pravatar.cc/150?img=${Math.abs(String(gameData.whitePlayerId).hashCode() % 100)}`,
-                rating: gameData.whitePlayerRating || 1450
-              },
-              black: {
-                name: gameData.blackPlayerName || 'Чорні',
-                avatar: `https://i.pravatar.cc/150?img=${Math.abs(String(gameData.blackPlayerId).hashCode() % 100)}`,
-                rating: gameData.blackPlayerRating || 1500
-              },
-            },
-            chessInstance: chessInstance,
-          };
-        });
-
-        setSimulGamesData(initialSimulGames);
-        if (initialSimulGames.length > 0) {
-          console.log('activeSimulGameId встановлено на:', initialSimulGames[0].gameId); // <-- ДОДАЙТЕ ЦЕЙ ЛОГ
-          setActiveSimulGameId(initialSimulGames[0].gameId);
-        }
-        initialSimulGames.forEach(game => {
-          // 1) Зупиняємо попередній таймер для цієї гри (якщо був)
-          clearInterval(timerRefs.current[game.gameId]);
-        
-          // 2) Запускаємо новий інтервал, який що 100 мс перераховує час за дедлайном
-          timerRefs.current[game.gameId] = setInterval(() => {
-            // *** ОГОЛОШУЄМО ЗМІННУ now ТУТ, у середині setInterval! ***
-            const now = Date.now();
-        
-            setSimulGamesData(prevGames =>
-              prevGames.map(g => {
-                // Якщо це не наша гра або вже не в статусі "Гра йде" — лишаємо як є
-                if (g.gameId !== game.gameId || g.gameStatus !== 'Гра йде') {
-                  return g;
-                }
-        
-                // Рахуємо залишок секунд до дедлайну
-                const whiteSec = Math.max(0, Math.ceil((g.whiteDeadline - now) / 1000));
-                const blackSec = Math.max(0, Math.ceil((g.blackDeadline - now) / 1000));
-        
-                // Якщо час вийшов — міняємо статус
-                const status = (whiteSec === 0 || blackSec === 0)
-                  ? 'Час вийшов'
-                  : g.gameStatus;
-        
-                return {
-                  ...g,
-                  whiteTime: whiteSec,
-                  blackTime: blackSec,
-                  gameStatus: status,
-                };
-              })
-            );
-          }, 100);
-        });
-        
-        
+      .then(res => res.ok ? res.json() : Promise.reject(res))
+      .then(gamesData => {
+        dispatch({ type: 'GAMES_FETCHED', payload: { gamesData, meId } });
       })
       .catch(error => {
         console.error('Помилка при отриманні ігор:', error);
+        dispatch({ type: 'FETCH_FAILED' });
       });
+  }, [token, meId, simulSessionId]);
 
-      return () => Object.values(timerRefs.current).forEach(clearInterval);
-  }, [token, meId, simulSessionId, updateGameData]);
-
-
+  // useEffect для WebSocket - без змін
   useEffect(() => {
-    if (activeSimulGameId && simulGamesData.length > 0) {
-      const activeGame = simulGamesData.find(game => game.gameId === activeSimulGameId);
-      if (activeGame) {
-        setFen(activeGame.fen);
-        setMoves(activeGame.moves);
-        setLastMove(activeGame.lastMove);
-        setWhiteTime(activeGame.whiteTime);
-        setBlackTime(activeGame.blackTime);
-        setIncrement(activeGame.increment);
-        setCurrentPlayer(activeGame.currentPlayer);
-        setGameMode(activeGame.gameMode);
-        setTimeControl(activeGame.timeControl);
-        setGameStatus(activeGame.gameStatus);
-        setLocalColor(activeGame.localColor);
-        setCapturedByWhite(activeGame.capturedByWhite);
-        setCapturedByBlack(activeGame.capturedByBlack);
-        // setPlayers(activeGame.players); // <--- ЦЕЙ РЯДОК БІЛЬШЕ НЕ ПОТРІБЕН
-      }
-    }
-  }, [activeSimulGameId, simulGamesData]);
+    if (status !== 'ready' || games.length === 0 || stompClientRef.current) return;
 
-
-  useEffect(() => {
-    if (!token || !simulGamesData.length > 0) return; // Залежить від наявності даних ігор для підписок
-
-    const socket = new SockJS(`http://${import.meta.env.BACKEND_SERVER_IP}:8082/ws-game`);
+    const socket = new SockJS(`http://${import.meta.env.VITE_BACKEND_SERVER_IP}:8082/ws-game`);
     const client = new Client({
       webSocketFactory: () => socket,
       connectHeaders: { Authorization: `Bearer ${token}` },
       reconnectDelay: 5000,
       onConnect: () => {
-        setStompClient(client);
+        stompClientRef.current = client;
 
-        simulGamesData.forEach(game => { // Перемістити підписки сюди, щоб вони виконувались після отримання даних
+        games.forEach(game => {
           client.subscribe(`/topic/game/${game.gameId}`, ({ body }) => {
             const rsp = JSON.parse(body);
-            const now = Date.now();
-            const targetGameId = rsp.gameId;
-
-            setSimulGamesData(prevGames => {
-              return prevGames.map(g => {
-                if (g.gameId === targetGameId) {
-                  const gameInstance = g.chessInstance;
-                  const currentMoves = [...g.moves];
-                  const currentLastMove = g.lastMove;
-                  let newCapturedByWhite = [...g.capturedByWhite];
-                  let newCapturedByBlack = [...g.capturedByBlack];
-                  let newFen = g.fen;
-                  let newCurrentPlayer = g.currentPlayer;
-
-                  if (rsp.senderId !== meId && rsp.move) {
-                    const result = gameInstance.move(rsp.move);
-                    if (result) {
-                      currentMoves.push(result.san);
-                      newFen = gameInstance.fen();
-                      newCurrentPlayer = gameInstance.turn();
-
-                      if (result.captured) {
-                        result.color === 'w'
-                          ? newCapturedByWhite.push(result.captured)
-                          : newCapturedByBlack.push(result.captured);
-                      }
-                    }
-                  }
-
-                  return {
-                    ...g,
-                    fen: newFen,
-                    moves: currentMoves,
-                    lastMove: rsp.move ? { from: rsp.move.substring(0, 2), to: rsp.move.substring(2, 4) } : currentLastMove,
-                    whiteDeadline: rsp.whiteDeadline,
-                    blackDeadline: rsp.blackDeadline,
-                    whiteTime: Math.max(0, Math.ceil((rsp.whiteDeadline - now) / 1000)),
-                    blackTime: Math.max(0, Math.ceil((rsp.blackDeadline - now) / 1000)),
-                    currentPlayer: newCurrentPlayer,
-                    capturedByWhite: newCapturedByWhite,
-                    capturedByBlack: newCapturedByBlack,
-                    gameStatus: rsp.gameStatus || g.gameStatus
-                  };
-                }
-                return g;
-              });
-            });
+            if (rsp.senderId === meId) return;
+            dispatch({ type: 'WEBSOCKET_MOVE_RECEIVED', payload: rsp });
           });
 
-
-
           client.subscribe(`/topic/game/${game.gameId}/conclude`, ({ body }) => {
-            const concl = JSON.parse(body);
-            let newGameStatus = 'Гра завершена';
-            let outcome = '';
-  
-            // Determine outcome and update statistics
-            if (concl.isWhiteWinner !== undefined) {
-              const isPlayerWhite = game.localColor === 'w';
-              if (concl.isWhiteWinner && isPlayerWhite) {
-                newGameStatus = 'Ви виграли!';
-                outcome = 'win';
-                setStats(prev => ({ ...prev, wins: prev.wins + 1 }));
-              } else if (concl.isWhiteWinner && !isPlayerWhite) {
-                newGameStatus = 'Ви програли.';
-                outcome = 'loss';
-                setStats(prev => ({ ...prev, losses: prev.losses + 1 }));
-              } else if (!concl.isWhiteWinner && isPlayerWhite) {
-                newGameStatus = 'Ви програли.';
-                outcome = 'loss';
-                setStats(prev => ({ ...prev, losses: prev.losses + 1 }));
-              } else if (!concl.isWhiteWinner && !isPlayerWhite) {
-                newGameStatus = 'Ви виграли!';
-                outcome = 'win';
-                setStats(prev => ({ ...prev, wins: prev.wins + 1 }));
-              }
-            } else {
-              newGameStatus = 'Нічия';
-              outcome = 'draw';
-              setStats(prev => ({ ...prev, draws: prev.draws + 1 }));
-            }
-  
-            // Update game data with outcome
-            updateGameData(game.gameId, { gameStatus: newGameStatus, outcome });
-  
-            // Show modal with conclusion details
-            setModalContent({
-              title: newGameStatus,
-              message: `Гра ${game.gameId} завершена. Результат: ${newGameStatus}`,
-              outcome,
-            });
-            setShowModal(true);
-  
-            // Clear game timer
-            clearInterval(timerRefs.current[game.gameId]);
-          });
-
-
-
-
-
-          client.subscribe(`/topic/game/${game.gameId}/conclude`, ({ body }) => {
-            const concl = JSON.parse(body);
-            let newGameStatus = 'Гра завершена';
-            if (concl.winnerId) newGameStatus = concl.winnerId === meId ? 'Ви виграли!' : 'Ви програли.';
-            else if (concl.reason) newGameStatus = concl.reason;
-
-            updateGameData(game.gameId, { gameStatus: newGameStatus });
-            clearInterval(timerRefs.current[game.gameId]);
+            const conclusion = JSON.parse(body);
+            dispatch({ type: 'GAME_CONCLUDED', payload: { gameId: game.gameId, conclusion } });
           });
         });
-      }
+      },
     });
 
     client.activate();
-    return () => {
-      client.deactivate();
-      Object.values(timerRefs.current).forEach(clearInterval);
-    };
-  }, [token, meId, simulGamesData, updateGameData]); // Додано simulGamesData в залежності
 
-  const handleCloseModal = useCallback(() => {
-    setShowModal(false);
+    return () => {
+      if (client.active) {
+        client.deactivate();
+      }
+      stompClientRef.current = null;
+    };
+  }, [status, games.length, token, meId]);
+
+  // useEffect для таймера - без змін
+  useEffect(() => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      dispatch({ type: 'UPDATE_TIMERS' });
+    }, 1000);
+
+    return () => clearInterval(timerRef.current);
   }, []);
 
+  // --- ОБРОБНИКИ ДІЙ ---
+
+  // === MODIFIED: Обробник ходу з перевіркою на "живий" режим ===
   const handleMove = useCallback((from, to) => {
-    console.log('Спроба ходу:', { from, to }); // Додати цей лог
-    if (!activeSimulGameId) {
-      console.log('Хід заблоковано: немає activeSimulGameId'); // Додати цей лог
-      return false;
-    }
-    const activeGame = simulGamesData.find(game => game.gameId === activeSimulGameId);
-    console.log('Активна гра:', activeGame); // Додати цей лог
-    if (!activeGame || activeGame.gameStatus !== 'Гра йде' || activeGame.currentPlayer !== activeGame.localColor) {
-      console.log('Хід заблоковано: статус гри або черга не дозволяють', {
-        activeGameExists: !!activeGame,
-        gameStatus: activeGame?.gameStatus,
-        currentPlayer: activeGame?.currentPlayer,
-        localColor: activeGame?.localColor
-      }); // Додати цей лог
+    const game = games.find(g => g.gameId === activeGameId);
+    const isLive = game?.viewedMoveIndex === null;
+
+    // Забороняємо хід, якщо не в "живому" режимі або гра завершена
+    if (!game || !isLive || game.gameStatus !== 'Гра йде' || game.currentPlayer !== game.localColor) {
       return false;
     }
 
-    const gameInstance = activeGame.chessInstance;
-    const mv = gameInstance.move({ from, to, promotion: 'q' });
-    console.log('Результат gameInstance.move():', mv); // Додати цей лог
-    if (!mv) {
-      console.log('Хід заблоковано: нелегальний хід за правилами шахів'); // Додати цей лог
+    const moveResult = game.chessInstance.move({ from, to, promotion: 'q' });
+    if (!moveResult) return false;
 
-      return false;
-    }
-
-    const newMoves = [...activeGame.moves, mv.san];
-    const newLastMove = { from: mv.from, to: mv.to };
-    let newCapturedByWhite = [...activeGame.capturedByWhite];
-    let newCapturedByBlack = [...activeGame.capturedByBlack];
-
-    if (mv.captured) {
-      mv.color === 'w'
-        ? (newCapturedByWhite.push(mv.captured))
-        : (newCapturedByBlack.push(mv.captured));
-    }
-
-    let newWhiteTime = activeGame.whiteTime;
-    let newBlackTime = activeGame.blackTime;
-    if (mv.color === 'w') newWhiteTime += activeGame.increment;
-    else newBlackTime += activeGame.increment;
-
-    updateGameData(activeSimulGameId, {
-      fen: gameInstance.fen(),
-      moves: newMoves,
-      lastMove: newLastMove,
-      capturedByWhite: newCapturedByWhite,
-      capturedByBlack: newCapturedByBlack,
-      whiteTime: newWhiteTime,
-      blackTime: newBlackTime,
-      currentPlayer: gameInstance.turn(),
+    // Редюсер автоматично скине viewedMoveIndex в null після нашого ходу
+    dispatch({
+      type: 'UPDATE_GAME_STATE',
+      payload: {
+        gameId: activeGameId,
+        updates: {
+          fen: game.chessInstance.fen(),
+          moves: [...game.moves, moveResult.san],
+          lastMove: { from: moveResult.from, to: moveResult.to },
+          currentPlayer: game.chessInstance.turn(),
+          whiteTime: moveResult.color === 'w' ? game.whiteTime + game.increment : game.whiteTime,
+          blackTime: moveResult.color === 'b' ? game.blackTime + game.increment : game.blackTime,
+          capturedByWhite: moveResult.captured && moveResult.color === 'w' ? [...game.capturedByWhite, moveResult.captured] : game.capturedByWhite,
+          capturedByBlack: moveResult.captured && moveResult.color === 'b' ? [...game.capturedByBlack, moveResult.captured] : game.capturedByBlack,
+        }
+      }
     });
 
-    if (stompClient?.active) {
-      stompClient.publish({
+    if (stompClientRef.current?.active) {
+      stompClientRef.current.publish({
         destination: '/app/move',
-        body: JSON.stringify({ gameId: activeSimulGameId, move: mv.san })
+        body: JSON.stringify({ gameId: activeGameId, move: moveResult.san })
       });
     }
     return true;
-  }, [activeSimulGameId, simulGamesData, stompClient, updateGameData]);
-
+  }, [games, activeGameId]);
+  
+  // Інші обробники без змін
   const handleResign = useCallback(() => {
-    const activeGame = simulGamesData.find(game => game.gameId === activeSimulGameId);
-    if (!activeSimulGameId || !activeGame || activeGame.gameStatus !== 'Гра йде') return;
-    if (stompClient?.active) {
-      stompClient.publish({
-        destination: `/app/game/${activeSimulGameId}/resign`,
-        body: JSON.stringify({ gameId: activeSimulGameId, playerId: meId })
-      });
-    }
-    updateGameData(activeSimulGameId, { gameStatus: 'Здаюсь' });
-  }, [activeSimulGameId, meId, stompClient, updateGameData, simulGamesData]);
-
-  const handleOfferDraw = useCallback(() => {
-    const activeGame = simulGamesData.find(game => game.gameId === activeSimulGameId);
-    if (!activeSimulGameId || !activeGame || activeGame.gameStatus !== 'Гра йде') return;
-    if (stompClient?.active) {
-      stompClient.publish({
-        destination: `/app/game/${activeSimulGameId}/drawOffer`,
-        body: JSON.stringify({ gameId: activeSimulGameId, playerId: meId })
-      });
-    }
-    updateGameData(activeSimulGameId, { gameStatus: 'Нічия' });
-  }, [activeSimulGameId, meId, stompClient, updateGameData, simulGamesData]);
-
-  const handleMoveBack = useCallback(() => {
-    if (!activeSimulGameId) return;
-    const activeGame = simulGamesData.find(game => game.gameId === activeSimulGameId);
-    if (!activeGame || activeGame.gameStatus !== 'Гра йде') return;
-
-    const gameInstance = activeGame.chessInstance;
-    gameInstance.undo();
-
-    const currentMoves = gameInstance.history();
-    let newCapturedByWhite = [];
-    let newCapturedByBlack = [];
-    const tempChessInstance = new Chess();
-    currentMoves.forEach(moveSan => {
-      const result = tempChessInstance.move(moveSan);
-      if (result && result.captured) {
-        result.color === 'w'
-          ? newCapturedByWhite.push(result.captured)
-          : newCapturedByBlack.push(result.captured);
-      }
-    });
-
-    updateGameData(activeSimulGameId, {
-      fen: gameInstance.fen(),
-      moves: currentMoves,
-      lastMove: null,
-      currentPlayer: gameInstance.turn(),
-      capturedByWhite: newCapturedByWhite,
-      capturedByBlack: newCapturedByBlack,
-    });
-  }, [activeSimulGameId, simulGamesData, updateGameData]);
-
-  const handleRestart = useCallback(() => {
-
-
-     const now = Date.now();    // <-- оголосили тут!
-    const activeGame = simulGamesData.find(game => game.gameId === activeSimulGameId);
-    if (!activeSimulGameId || !activeGame || activeGame.gameStatus !== 'Гра йде') return;
-
-    const gameInstance = activeGame.chessInstance;
-    gameInstance.reset();
-
-    updateGameData(activeSimulGameId, {
-      fen: 'start',
-      moves: [],
-      lastMove: null,
-      whiteDeadline: activeGame.whiteDeadline,
-      blackDeadline: activeGame.blackDeadline,
-           // рахуємо залишок через дедлайн
-           whiteTime:  Math.max(0, Math.ceil((activeGame.whiteDeadline - now) / 1000)),
-           blackTime:  Math.max(0, Math.ceil((activeGame.blackDeadline - now) / 1000)),
-      gameStatus: 'Гра йде',
-      currentPlayer: 'w',
-      capturedByWhite: [],
-      capturedByBlack: [],
-    });
-  }, [activeSimulGameId, simulGamesData, updateGameData]);
-
-  const startAutoSwitch = useCallback(() => {
-    if (autoSwitchIntervalRef.current) {
-      clearInterval(autoSwitchIntervalRef.current);
-    }
-    if (simulGamesData.length > 1) {
-      autoSwitchIntervalRef.current = setInterval(() => {
-        autoSwitchIndexRef.current = (autoSwitchIndexRef.current + 1) % simulGamesData.length;
-        setActiveSimulGameId(simulGamesData[autoSwitchIndexRef.current].gameId);
-      }, 5000);
-    }
-  }, [simulGamesData]);
-
-  useEffect(() => {
-    startAutoSwitchRef.current = startAutoSwitch;
-  }, [startAutoSwitch]);
+     stompClientRef.current?.publish({ destination: `/app/game/${activeGameId}/resign`, body: JSON.stringify({ gameId: activeGameId, playerId: meId }) });
+     dispatch({ type: 'UPDATE_GAME_STATE', payload: { gameId: activeGameId, updates: { gameStatus: 'Ви здалися' } } });
+  }, [activeGameId, meId]);
 
   const handleMiniBoardClick = useCallback((gameId) => {
-    setActiveSimulGameId(gameId);
-    if (autoSwitchEnabled) {
-      const index = simulGamesData.findIndex(game => game.gameId === gameId);
-      if (index !== -1) {
-        autoSwitchIndexRef.current = index;
-        if (autoSwitchIntervalRef.current) {
-          clearInterval(autoSwitchIntervalRef.current);
-          startAutoSwitchRef.current();
-        }
-      }
-    }
-  }, [autoSwitchEnabled, simulGamesData]);
-
-  const handleAutoSwitchToggle = useCallback(() => {
-    setAutoSwitchEnabled(prev => !prev);
+    dispatch({ type: 'SET_ACTIVE_GAME', payload: gameId });
   }, []);
 
-  useEffect(() => {
-    if (autoSwitchEnabled) {
-      startAutoSwitch();
-    } else {
-      clearInterval(autoSwitchIntervalRef.current);
+  const handleCloseModal = useCallback(() => {
+    dispatch({ type: 'HIDE_MODAL' });
+  }, []);
+  
+  // === NEW: Обробники для навігації по історії ===
+  const handleMoveBackward = useCallback(() => {
+    dispatch({ type: 'MOVE_HISTORY_BACK', payload: { gameId: activeGameId } });
+  }, [activeGameId]);
+
+  const handleMoveForward = useCallback(() => {
+    dispatch({ type: 'MOVE_HISTORY_FORWARD', payload: { gameId: activeGameId } });
+  }, [activeGameId]);
+
+
+  // --- Рендер компонента ---
+
+  const activeGame = games.find(game => game.gameId === activeGameId);
+
+  if (status === 'loading') return <div>Завантаження сеансу...</div>;
+  if (status === 'error' || !activeGame) return <div>Помилка завантаження гри. Спробуйте оновити сторінку.</div>;
+  
+  // === NEW: Логіка для відображення FEN та підсвітки залежно від режиму перегляду ===
+  const isLive = activeGame.viewedMoveIndex === null;
+  let displayFen = activeGame.fen;
+  let displayLastMove = isLive ? activeGame.lastMove : null;
+
+  if (!isLive) {
+    const tempGame = new Chess();
+    // Відтворюємо ходи до індексу, що переглядається (-1 для початкової позиції)
+    for (let i = 0; i <= activeGame.viewedMoveIndex; i++) {
+        tempGame.move(activeGame.moves[i]);
     }
-    return () => clearInterval(autoSwitchIntervalRef.current);
-  }, [autoSwitchEnabled, startAutoSwitch]);
-
-
-
-
-  const activeGame = simulGamesData.find(game => game.gameId === activeSimulGameId);
-
-  if (!activeGame) {
-    return <div>Помилка: Активну гру не знайдено.</div>;
+    displayFen = tempGame.fen();
+    const history = tempGame.history({ verbose: true });
+    // Знаходимо останній хід у відтвореній історії
+    if (history.length > 0) {
+        const last = history[history.length - 1];
+        displayLastMove = { from: last.from, to: last.to };
+    }
   }
 
-  const customSquareStyles = activeGame.lastMove ? {
-    [activeGame.lastMove.from]: { backgroundColor: 'rgba(255,255,0,0.4)' },
-    [activeGame.lastMove.to]: { backgroundColor: 'rgba(255,255,0,0.4)' },
+  const customSquareStyles = displayLastMove ? {
+    [displayLastMove.from]: { backgroundColor: 'rgba(255,255,0,0.4)' },
+    [displayLastMove.to]: { backgroundColor: 'rgba(255,255,0,0.4)' },
   } : {};
-
 
   return (
     <SimulPageUI
-      fen={activeGame.fen}
-      onPieceDrop={handleMove}
+      // === MODIFIED: Передаємо розраховані значення для дошки та історії ===
+      fen={displayFen}
       customSquareStyles={customSquareStyles}
+      onMoveBackward={handleMoveBackward}
+      onMoveForward={handleMoveForward}
+      onPieceDrop={handleMove}
+      
+      // --- Решта пропсів без змін ---
       boardOrientation={activeGame.localColor === 'w' ? 'white' : 'black'}
-      players={activeGame.players} 
+      players={activeGame.players}
       localColor={activeGame.localColor}
       whiteTime={activeGame.whiteTime}
       blackTime={activeGame.blackTime}
@@ -572,21 +211,19 @@ const [modalContent, setModalContent] = useState({ title: '', message: '', outco
       capturedByWhite={activeGame.capturedByWhite}
       capturedByBlack={activeGame.capturedByBlack}
       onResign={handleResign}
-      onOfferDraw={handleOfferDraw}
-      onMoveBackward={handleMoveBack}
-      onMoveForward={() => console.log('Mock move forward for active game')}
-      onRestart={handleRestart}
-
-      simulGames={simulGamesData}
-      activeSimulGameId={activeSimulGameId}
+      onOfferDraw={() => { /* ... */ }}
+      onRestart={() => {}}
+      simulGames={games}
+      activeSimulGameId={activeGameId}
       onMiniBoardClick={handleMiniBoardClick}
-      autoSwitchEnabled={autoSwitchEnabled}
-      onAutoSwitchToggle={handleAutoSwitchToggle}
-
-      stats={stats} // Pass statistics
-    showModal={showModal} // Pass modal state
-    modalContent={modalContent} // Pass modal content
-    onCloseModal={handleCloseModal} // Pass modal close handler
+      stats={stats}
+      showModal={modal.show}
+      modalContent={modal.content}
+      onCloseModal={handleCloseModal}
+      autoSwitchEnabled={false}
+      onAutoSwitchToggle={() => {}}
+      boardStyle={settings.boardStyle}
+      pieceStyle={settings.pieceStyle}
     />
   );
 }

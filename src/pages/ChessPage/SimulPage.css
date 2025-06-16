@@ -158,24 +158,56 @@
   color: #ffc107; /* Yellow for draws */
 }
 
-/* Outcome Highlights for Mini-Boards */
-.mini-board-wrapper.outcome-win {
-  border-color: #28a745; /* Green border for wins */
-  background-color: rgba(40, 167, 69, 0.1); /* Light green background */
-}
+/* Додайте цей код в кінець вашого файлу SimulPage.css */
 
-.mini-board-wrapper.outcome-loss {
-  border-color: #dc3545; /* Red border for losses */
-  background-color: rgba(220, 53, 69, 0.1); /* Light red background */
-}
-
-.mini-board-wrapper.outcome-draw {
-  border-color: #ffc107; /* Yellow border for draws */
-  background-color: rgba(255, 193, 7, 0.1); /* Light yellow background */
-}
-
-/* Ensure active class has higher specificity if needed */
+/* Стиль для активної (вибраної) міні-дошки */
 .mini-board-wrapper.active {
-  border-color: #007bff !important;
-  box-shadow: 0 0 15px rgba(0, 123, 255, 0.7) !important;
+  border-color: #007bff; /* Яскраво-синій для виділення */
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+}
+
+/* === СТИЛІ ДЛЯ РЕЗУЛЬТАТІВ ГРИ === */
+
+/* Перемога (зелений) */
+.mini-board-wrapper.outcome-win {
+  border: 2px solid #28a745;
+  box-shadow: 0 0 10px rgba(40, 167, 69, 0.4);
+}
+.mini-board-wrapper.outcome-win .mini-board-info p {
+    color: #28a745;
+    font-weight: bold;
+}
+
+/* Поразка (червоний) */
+.mini-board-wrapper.outcome-loss {
+  border: 2px solid #dc3545;
+  box-shadow: 0 0 10px rgba(220, 53, 69, 0.4);
+}
+.mini-board-wrapper.outcome-loss .mini-board-info p {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+
+/* Нічия (жовтий/помаранчевий) */
+.mini-board-wrapper.outcome-draw {
+  border: 2px solid #ffc107;
+  box-shadow: 0 0 10px rgba(255, 193, 7, 0.4);
+}
+.mini-board-wrapper.outcome-draw .mini-board-info p {
+    color: #e4a800;
+    font-weight: bold;
+}
+
+/* Загальний стиль для обгортки міні-дошки */
+.mini-board-wrapper {
+    border: 2px solid transparent; /* Прозорий бордер за замовчуванням, щоб уникнути "стрибків" при зміні */
+    border-radius: 8px;
+    padding: 5px;
+    transition: all 0.3s ease-in-out;
+    cursor: pointer;
+}
+
+.mini-board-wrapper:hover {
+    border-color: #ccc;
 }

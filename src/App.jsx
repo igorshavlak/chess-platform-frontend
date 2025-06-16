@@ -18,6 +18,8 @@ import GameRequestsPage from './pages/GameRequestsPage/GameRequestsPage.jsx';
 import websocketService from './components/websocketService.js';
 import ChessBotPageContainer from './pages/ChessPage/ChessBotPageContainer'; // Нова сторінка з ботом
 import RegistrationPage from './pages/RegistrationPage/RegistrationPage.jsx';
+import SettingsPage from './pages/Settings/SettingsPage.jsx';
+import { SettingsProvider } from './context/SettingsContext';
 
 
 
@@ -92,10 +94,17 @@ function App() {
       service: websocketService,
       connected: wsConnected
     }}>
+
       <Router>
+        <SettingsProvider>
         <Routes>
            <Route path="/register" element={<RegistrationPage />} />
           <Route path="/requests" element={<GameRequestsPage />} />
+           <Route path="/settings" element={
+            <PrivateRoute>
+              <SettingsPage />
+            </PrivateRoute>
+          } />
           <Route path="/simul/lobby/:lobbyId" element={
             <PrivateRoute>
             <SimulLobbyPage />
@@ -141,6 +150,7 @@ function App() {
             wsConnected={wsConnected} 
           />
         )}
+    </SettingsProvider>
       </Router>
     </WSSContext.Provider>
   );

@@ -1,0 +1,167 @@
+:root {
+  /* Нова палітра "Modern Dark" */
+  --settings-bg: #2E2E2E; /* Основний фон сторінки */
+  --settings-card-bg: #3A3A3A; /* Фон для основної картки */
+  --settings-text: #F5F5F5; /* Основний колір тексту */
+  --settings-text-secondary: #4D96FF; /* Колір для підзаголовків (синій акцент) */
+  --settings-accent: #4D96FF; /* Основний акцентний колір (синій) */
+  --settings-border: #555555; /* Колір для рамок */
+  --settings-selected-border: #50fa7b; /* Колір для виділеного елемента (зелений) */
+  --settings-hover-bg: #444444; /* Фон елемента при наведенні */
+}
+
+/* Змінено `background-color` на нову змінну `--settings-bg` */
+.settings-page-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 40px 20px;
+  background-color: var(--settings-bg);
+  color: var(--settings-text);
+  font-family: 'Inter', sans-serif;
+}
+
+.settings-card {
+  width: 100%;
+  max-width: 900px;
+  background-color: var(--settings-card-bg);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  border: 1px solid var(--settings-border);
+}
+
+/* Фон вкладок зроблено трохи темнішим за картку для глибини */
+.settings-tabs {
+  display: flex;
+  background-color: #313131; 
+}
+
+.tab-button {
+  flex: 1;
+  padding: 18px 20px;
+  border: none;
+  background-color: transparent;
+  color: var(--settings-text);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-bottom: 3px solid transparent;
+}
+
+.tab-button.active {
+  color: var(--settings-accent);
+  border-bottom-color: var(--settings-accent);
+  background-color: var(--settings-card-bg);
+}
+
+.tab-button:not(.active):hover {
+  background-color: var(--settings-hover-bg);
+}
+
+.settings-content {
+  padding: 30px;
+}
+
+.profile-content,
+.customization-content {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.customization-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+}
+
+@media (max-width: 768px) {
+  .customization-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.options-panel, .preview-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.options-panel h3, .preview-panel h3 {
+  font-size: 20px;
+  color: var(--settings-text-secondary);
+  border-bottom: 1px solid var(--settings-border);
+  padding-bottom: 10px;
+  margin-bottom: 5px;
+}
+
+.options-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 15px;
+}
+
+.piece-option, .board-option {
+  cursor: pointer;
+  border: 2px solid var(--settings-border);
+  border-radius: 8px;
+  transition: all 0.3s;
+  overflow: hidden;
+  text-align: center;
+  /* Фон тепер трохи темніший за фон картки */
+  background-color: #313131;
+}
+
+.piece-option:hover, .board-option:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  border-color: var(--settings-text-secondary);
+}
+
+.piece-option.selected, .board-option.selected {
+  border-color: var(--settings-selected-border);
+  box-shadow: 0 0 15px rgba(80, 250, 123, 0.4);
+}
+
+/* Фон для прев'ю фігури тепер використовує змінну */
+.piece-preview-img {
+  width: 100%;
+  height: auto;
+  background-color: var(--settings-border);
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.option-name {
+  padding: 10px 5px;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.board-swatch {
+  width: 100%;
+  padding-top: 100%;
+  position: relative;
+}
+
+.board-swatch-light, .board-swatch-dark {
+  position: absolute;
+  width: 100%;
+  height: 50%;
+  top: 0;
+  left: 0;
+}
+
+.board-swatch-dark {
+  top: 50%;
+}

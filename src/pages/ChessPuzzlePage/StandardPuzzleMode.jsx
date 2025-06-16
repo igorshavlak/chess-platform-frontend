@@ -3,10 +3,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Chess } from 'chess.js';
 import ChessboardComponent from '../../components/ChessboardComponent/ChessboardComponent';
 import PuzzleControlPanel from '../../components/PuzzleControlPanel/PuzzleControlPanel';
+import { useSettings } from '../../context/SettingsContext';
 import mockPuzzles from './mockPuzzles';
 import './ChessPuzzlePage.css';
 
 function StandardPuzzleMode() {
+    const { settings, isLoading } = useSettings();
     const [game, setGame] = useState(new Chess());
     const [history, setHistory] = useState([]);
     const [idx, setIdx] = useState(0);
@@ -319,6 +321,8 @@ function StandardPuzzleMode() {
                            onPieceDrop={handlePieceDrop}
                            customSquareStyles={styles}
                            boardOrientation={orientation}
+                           boardStyle={settings.boardStyle}
+                           pieceStyle={settings.pieceStyle}
                        />
                  </div>
                  <PuzzleControlPanel
